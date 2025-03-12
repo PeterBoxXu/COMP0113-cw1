@@ -117,6 +117,7 @@ public class SimpleShapeAvatar : MonoBehaviour
             
         lastShape = serializedShape;
         currentShape = shapes[index];
+        Debug.Log(currentShape.name);
     }
     
 }
