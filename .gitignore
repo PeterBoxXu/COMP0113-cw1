@@ -75,4 +75,8 @@ crashlytics-build.properties
 
 # Too big files
 *.psd
+*.psd.meta
 *.rar
+*.rar.meta
+*.zip
+*.zip.meta
