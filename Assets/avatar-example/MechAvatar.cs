@@ -12,11 +12,15 @@ public class MechAvatar : MonoBehaviour
     public Transform head;
     public Transform torsoBase;
     public Transform torso;
+    public Transform leftHand;
+    public Transform rightHand;
 
 
     public Renderer headRenderer;
     private HeadAndHandsAvatar headAndHandsAvatar;
-    
+    public Renderer leftHandRenderer;
+    public Renderer rightHandRenderer;
+
     private Avatar avatar;
     private InputVar<Pose> lastGoodHeadPose;
     private XROrigin xrOrigin;
@@ -40,8 +44,8 @@ public class MechAvatar : MonoBehaviour
         if (headAndHandsAvatar)
         {
             headAndHandsAvatar.OnHeadUpdate.AddListener(HeadAndHandsEvents_OnHeadUpdate);
-            // headAndHandsAvatar.OnLeftHandUpdate.AddListener(HeadAndHandsEvents_OnLeftHandUpdate);
-            // headAndHandsAvatar.OnRightHandUpdate.AddListener(HeadAndHandsEvents_OnRightHandUpdate);
+             headAndHandsAvatar.OnLeftHandUpdate.AddListener(HeadAndHandsEvents_OnLeftHandUpdate);
+            headAndHandsAvatar.OnRightHandUpdate.AddListener(HeadAndHandsEvents_OnRightHandUpdate);
         }
     }
 
@@ -50,8 +54,8 @@ public class MechAvatar : MonoBehaviour
         if (headAndHandsAvatar && headAndHandsAvatar != null)
         {
             headAndHandsAvatar.OnHeadUpdate.RemoveListener(HeadAndHandsEvents_OnHeadUpdate);
-            // headAndHandsAvatar.OnLeftHandUpdate.RemoveListener(HeadAndHandsEvents_OnLeftHandUpdate);
-            // headAndHandsAvatar.OnRightHandUpdate.RemoveListener(HeadAndHandsEvents_OnRightHandUpdate);
+             headAndHandsAvatar.OnLeftHandUpdate.RemoveListener(HeadAndHandsEvents_OnLeftHandUpdate);
+            headAndHandsAvatar.OnRightHandUpdate.RemoveListener(HeadAndHandsEvents_OnRightHandUpdate);
         }
     }
 
@@ -73,11 +77,37 @@ public class MechAvatar : MonoBehaviour
         lastGoodHeadPose = pose;
     }
 
+    private void HeadAndHandsEvents_OnLeftHandUpdate(InputVar<Pose> pose)
+    {
+        if (!pose.valid)
+        {
+            leftHandRenderer.enabled = false;
+            return;
+        }
+
+        leftHandRenderer.enabled = true;
+        leftHand.position = pose.value.position;
+        leftHand.rotation = pose.value.rotation;
+    }
+
+    private void HeadAndHandsEvents_OnRightHandUpdate(InputVar<Pose> pose)
+    {
+        if (!pose.valid)
+        {
+            rightHandRenderer.enabled = false;
+            return;
+        }
+
+        rightHandRenderer.enabled = true;
+        rightHand.position = pose.value.position;
+        rightHand.rotation = pose.value.rotation;
+    }
+
     private void TexturedAvatar_OnTextureChanged(Texture2D tex)
     {
         headRenderer.material.mainTexture = tex;
-        // leftHandRenderer.material = headRenderer.material;
-        // rightHandRenderer.material = headRenderer.material;
+         leftHandRenderer.material = headRenderer.material;
+        rightHandRenderer.material = headRenderer.material;
     }
 
     private void Update()
