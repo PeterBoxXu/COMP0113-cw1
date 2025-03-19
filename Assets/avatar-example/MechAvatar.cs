@@ -113,7 +113,7 @@ public class MechAvatar : MonoBehaviour
     private void Update()
     {
         UpdateTorso();
-        Debug.Log("torso position: " + torso.position);
+        // Debug.Log("torso position: " + torso.position);
     }
 
     private void UpdateTorso()
