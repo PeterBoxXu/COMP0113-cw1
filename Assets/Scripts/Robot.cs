@@ -6,304 +6,222 @@ using Ubiq.Messaging;
 
 public class NetworkedRobot : MonoBehaviour
 {
-    private MeshRenderer m_MeshRenderer;
-    public GameObject cubeArms;
-    public GameObject cylinderArms;
-    public GameObject capsuleArms;
-    public GameObject cubeLegs;
-    public GameObject cylinderLegs;
-    public GameObject capsuleLegs;
-    public Color originalColor;
-    public String jsonString;
+    public string jsonString;
     public Text logText;
     public int robotCode;
-
+    public SkinnedMeshRenderer leftArmRenderer;
+    public MeshRenderer leftHandRenderer;
+    public SkinnedMeshRenderer rightArmRenderer;
+    public MeshRenderer rightHandRenderer;
+    public SkinnedMeshRenderer bodyRenderer;
+    public int[] robotState = new int[3];
+    public Material[] bodyMaterials;
 
     private string networkIdString;
     private RoomClient roomClient;
+    private string localPeerId;
+    private bool isSyncing = false;
+    private float syncCooldown = 0.1f; // 同步冷却时间
+    private float lastSyncTime = 0f;
+    private bool pendingSync = false;
 
     private void Awake()
     {
-        m_MeshRenderer = GetComponent<MeshRenderer>();
+        // Initialize default robot state
         robotCode = 0;
+        robotState[0] = 0;
+        robotState[1] = 0;
+        robotState[2] = 0;
+
+        // Set initial materials if available
+        if (bodyMaterials != null && bodyMaterials.Length > 0)
+        {
+            leftArmRenderer.material = bodyMaterials[0];
+            leftHandRenderer.material = bodyMaterials[0];
+            rightArmRenderer.material = bodyMaterials[0];
+            rightHandRenderer.material = bodyMaterials[0];
+            bodyRenderer.material = bodyMaterials[0];
+        }
     }
 
     private void Start()
     {
         // Initialize networking
         networkIdString = NetworkId.Create(this).ToString();
+        Debug.Log($"NetworkId created: {networkIdString}");
+        
         roomClient = GetComponent<RoomClient>();
+        if (roomClient == null)
+        {
+            Debug.LogError("RoomClient component not found!");
+            return;
+        }
+        
+        // 存储本地玩家ID用于权限管理
+        if (roomClient.Me != null)
+        {
+            localPeerId = roomClient.Me.uuid;
+            Debug.Log($"Local Peer ID: {localPeerId}");
+        }
+        
+        Debug.Log("Adding room updated listener");
         roomClient.OnRoomUpdated.AddListener(RoomClient_OnRoomUpdated);
+    }
+
+    private void Update()
+    {
+        // 处理延迟同步
+        if (pendingSync && Time.time - lastSyncTime > syncCooldown)
+        {
+            pendingSync = false;
+            SyncRobotState();
+        }
     }
 
     private void RoomClient_OnRoomUpdated(IRoom room)
     {
+        // 避免自己的更新触发自己的回调
+        if (isSyncing)
+        {
+            isSyncing = false;
+            return;
+        }
+
+        Debug.Log($"OnRoomUpdated: {networkIdString} value = {room[networkIdString]}");
         var robotProperty = room[networkIdString];
         if (!string.IsNullOrEmpty(robotProperty))
         {
-            // Parse the JSON data from the room property
-            RobotData data = JsonUtility.FromJson<RobotData>(robotProperty);
-            
-            // Apply the robot configuration based on the parsed data
-            ApplyRobotData(data);
+            try
+            {
+                // 解析JSON数据
+                RobotData data = JsonUtility.FromJson<RobotData>(robotProperty);
+                
+                // 检查是否需要应用更新 (避免无限循环)
+                if (data.leftArm != robotState[0] || 
+                    data.rightArm != robotState[1] || 
+                    data.body != robotState[2])
+                {
+                    // 应用数据更新
+                    ApplyRobotData(data);
+                    
+                    // 更新本地状态
+                    robotState[0] = data.leftArm;
+                    robotState[1] = data.rightArm;
+                    robotState[2] = data.body;
+                    
+                    // 更新UI显示
+                    UpdateRobotUI();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error parsing robot data: {e.Message}");
+            }
         }
     }
 
-    // Apply robot data without broadcasting changes
+    // 应用机器人数据但不广播更改
     private void ApplyRobotData(RobotData data)
     {
-        // Set arms
-        switch(data.arm)
+        int left = data.leftArm;
+        int right = data.rightArm;
+        int body = data.body;
+        
+        if (bodyMaterials != null && bodyMaterials.Length > 0)
         {
-            case 0:
-                SetCubeArmsInternal();
-                break;
-            case 1:
-                SetCylinderArmsInternal();
-                break;
-            case 2:
-                SetCapsuleArmsInternal();
-                break;
-        }
-
-        // Set legs
-        switch(data.leg)
-        {
-            case 0:
-                SetCubeLegsInternal();
-                break;
-            case 1:
-                SetCylinderLegsInternal();
-                break;
-            case 2:
-                SetCapsuleLegsInternal();
-                break;
-        }
-
-        // Set color
-        SetColorInternal(new Color(data.color.r/255f, data.color.g/255f, data.color.b/255f));
-    }
-
-
-    private void SetColorInternal(Color color)
-    {
-        m_MeshRenderer.material.color = color;
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-        {
-            renderer.material.color = color;
+            if (left >= 0 && left < bodyMaterials.Length)
+            {
+                leftArmRenderer.material = bodyMaterials[left];
+                leftHandRenderer.material = bodyMaterials[left];
+            }
+            
+            if (right >= 0 && right < bodyMaterials.Length)
+            {
+                rightArmRenderer.material = bodyMaterials[right];
+                rightHandRenderer.material = bodyMaterials[right];
+            }
+            
+            if (body >= 0 && body < bodyMaterials.Length)
+            {
+                bodyRenderer.material = bodyMaterials[body];
+            }
         }
     }
 
-    private void SetCubeArmsInternal()
+    public void ChangeBodyColor(int color)
     {
-        cylinderArms.SetActive(false);
-        capsuleArms.SetActive(false);
-        Color mainColor = m_MeshRenderer.material.color;
-        foreach (Renderer renderer in cubeArms.GetComponentsInChildren<Renderer>())
+        if (color >= 0 && color < bodyMaterials.Length)
         {
-            renderer.material.color = mainColor;
+            Material m = bodyMaterials[color];
+            bodyRenderer.material = m;
+            robotState[2] = color;
+            
+            // 设置延迟同步
+            ScheduleSync();
         }
-        cubeArms.SetActive(true);
     }
-
-    private void SetCylinderArmsInternal()
+    
+    public void ChangeLeftArmColor(int color)
     {
-        cubeArms.SetActive(false);
-        capsuleArms.SetActive(false);
-        Color mainColor = m_MeshRenderer.material.color;
-        foreach (Renderer renderer in cylinderArms.GetComponentsInChildren<Renderer>())
+        if (color >= 0 && color < bodyMaterials.Length)
         {
-            renderer.material.color = mainColor;
+            Material m = bodyMaterials[color];
+            leftArmRenderer.material = m;
+            leftHandRenderer.material = m;
+            robotState[0] = color;
+            
+            // 设置延迟同步
+            ScheduleSync();
         }
-        cylinderArms.SetActive(true);
     }
-
-    private void SetCapsuleArmsInternal()
+    
+    public void ChangeRightArmColor(int color)
     {
-        cubeArms.SetActive(false);
-        cylinderArms.SetActive(false);
-        Color mainColor = m_MeshRenderer.material.color;
-        foreach (Renderer renderer in capsuleArms.GetComponentsInChildren<Renderer>())
+        if (color >= 0 && color < bodyMaterials.Length)
         {
-            renderer.material.color = mainColor;
+            Material m = bodyMaterials[color];
+            rightArmRenderer.material = m;
+            rightHandRenderer.material = m;
+            robotState[1] = color;
+            
+            // 设置延迟同步
+            ScheduleSync();
         }
-        capsuleArms.SetActive(true);
     }
-
-    private void SetCubeLegsInternal()
-    {
-        cylinderLegs.SetActive(false);
-        capsuleLegs.SetActive(false);
-        Color mainColor = m_MeshRenderer.material.color;
-        foreach (Renderer renderer in cubeLegs.GetComponentsInChildren<Renderer>())
-        {
-            renderer.material.color = mainColor;
-        }
-        cubeLegs.SetActive(true);
-    }
-
-    private void SetCylinderLegsInternal()
-    {
-        capsuleLegs.SetActive(false);
-        cubeLegs.SetActive(false);
-        Color mainColor = m_MeshRenderer.material.color;
-        foreach (Renderer renderer in cylinderLegs.GetComponentsInChildren<Renderer>())
-        {
-            renderer.material.color = mainColor;
-        }
-        cylinderLegs.SetActive(true);
-    }
-
-    private void SetCapsuleLegsInternal()
-    {
-        cubeLegs.SetActive(false);
-        cylinderLegs.SetActive(false);
-        Color mainColor = m_MeshRenderer.material.color;
-        foreach (Renderer renderer in capsuleLegs.GetComponentsInChildren<Renderer>())
-        {
-            renderer.material.color = mainColor;
-        }
-        capsuleLegs.SetActive(true);
-    }
-
-    // Public methods that update both local state and network state
-    public void ChangColorRed()
-    {
-        Debug.Log("Changing color red");
-        SetColorInternal(Color.red);
-        SyncRobotState();
-    }
-
-    public void ChangColorGreen()
-    {
-        SetColorInternal(Color.green);
-        SyncRobotState();
-    }
-
-    public void ChangColorBlue()
-    {
-        SetColorInternal(Color.blue);
-        SyncRobotState();
-    }
-
-    public void ShowCubeArms()
-    {
-        SetCubeArmsInternal();
-        SyncRobotState();
-    }
-
-    public void ShowCylinderArms()
-    {
-        SetCylinderArmsInternal();
-        SyncRobotState();
-    }
-
-    public void ShowCapsuleArms()
-    {
-        SetCapsuleArmsInternal();
-        SyncRobotState();
-    }
-
-    public void ShowCubeLegs()
-    {
-        SetCubeLegsInternal();
-        SyncRobotState();
-    }
-
-    public void ShowCylinderLegs()
-    {
-        SetCylinderLegsInternal();
-        SyncRobotState();
-    }
-
-    public void ShowCapsuleLegs()
-    {
-        SetCapsuleLegsInternal();
-        SyncRobotState();
-    }
-
+    
     public void ResetRobot()
     {
-        cubeArms.SetActive(false);
-        cylinderArms.SetActive(false);
-        capsuleArms.SetActive(false);
-        cubeLegs.SetActive(false);
-        cylinderLegs.SetActive(false);
-        capsuleLegs.SetActive(false);
-        Color mainColor = originalColor;
-        m_MeshRenderer.material.color = mainColor;
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-        {
-            renderer.material.color = mainColor;
-        }
         logText.text = "";
         
-        // Clear the robot state on the network
-        if (roomClient && roomClient.Room != null)
+        if (bodyMaterials != null && bodyMaterials.Length > 0)
         {
-            roomClient.Room[networkIdString] = "";
+            leftArmRenderer.material = bodyMaterials[0];
+            leftHandRenderer.material = bodyMaterials[0];
+            rightArmRenderer.material = bodyMaterials[0];
+            rightHandRenderer.material = bodyMaterials[0];
+            bodyRenderer.material = bodyMaterials[0];
         }
+        
+        robotState[0] = 0;
+        robotState[1] = 0;
+        robotState[2] = 0;
+        
+        // 立即同步重置状态到网络
+        SyncRobotState();
     }
 
     [Serializable]
     public class RobotData
     {
-        public int arm;
-        public int leg;
-        public Color32 color;
+        public int leftArm;
+        public int rightArm;
+        public int body;
     }
 
-    // This method now collects the robot data and syncs it across the network
-    public void GetRobotData()
+    // 更新UI显示
+    private void UpdateRobotUI()
     {
-        RobotData data = new RobotData();
-        bool isComplete = true;
-
-        if (cubeArms.activeInHierarchy)
-        {
-            data.arm = 0;
-        }
-        else if (cylinderArms.activeInHierarchy)
-        {
-            data.arm = 1;
-        }
-        else if (capsuleArms.activeInHierarchy)
-        {
-            data.arm = 2;
-        }
-        else
-        {
-            isComplete = false;
-        }
-
-        if (cubeLegs.activeInHierarchy)
-        {
-            data.leg = 0;
-        }
-        else if (cylinderLegs.activeInHierarchy)
-        {
-            data.leg = 1;
-        }
-        else if (capsuleLegs.activeInHierarchy)
-        {
-            data.leg = 2;
-        }
-        else
-        {
-            isComplete = false;
-        }
-
-        if (!isComplete)
-        {
-            ShowErrorUI();
-            return;
-        }
-
-        data.color = m_MeshRenderer.material.color;
-        
-        jsonString = JsonUtility.ToJson(data);
-        Debug.Log("Robot Data in JSON: " + jsonString);
-        robotCode = robotCode + 1;
+        robotCode++;
         
         if (robotCode < 10)
         {
@@ -317,44 +235,47 @@ public class NetworkedRobot : MonoBehaviour
         {
             logText.text = "Robot Build-Up Complete! Robot Code: " + robotCode;
         }
-
-        // Sync the robot state to all clients
-        SyncRobotState();
     }
-
-    // Synchronize the current robot state to all clients
+    
+    // 安排延迟同步，防止过于频繁的网络更新
+    private void ScheduleSync()
+    {
+        pendingSync = true;
+        
+        // 如果冷却已结束，可以立即同步
+        if (Time.time - lastSyncTime > syncCooldown)
+        {
+            pendingSync = false;
+            SyncRobotState();
+        }
+    }
+    
+    // 同步当前机器人状态到所有客户端
     private void SyncRobotState()
     {
-        if (roomClient && roomClient.Room != null)
+        if (roomClient != null && roomClient.Room != null)
         {
-            RobotData data = new RobotData();
+            lastSyncTime = Time.time;
             
-            // Get arm type
-            if (cubeArms.activeInHierarchy)
-                data.arm = 0;
-            else if (cylinderArms.activeInHierarchy)
-                data.arm = 1;
-            else if (capsuleArms.activeInHierarchy)
-                data.arm = 2;
-            else
-                data.arm = -1;
-
-            // Get leg type
-            if (cubeLegs.activeInHierarchy)
-                data.leg = 0;
-            else if (cylinderLegs.activeInHierarchy)
-                data.leg = 1;
-            else if (capsuleLegs.activeInHierarchy)
-                data.leg = 2;
-            else
-                data.leg = -1;
-
-            // Get color
-            data.color = m_MeshRenderer.material.color;
-
-            // Convert to JSON and set as room property
-            string json = JsonUtility.ToJson(data);
-            roomClient.Room[networkIdString] = json;
+            // 创建数据对象
+            RobotData data = new RobotData
+            {
+                leftArm = robotState[0],
+                rightArm = robotState[1],
+                body = robotState[2]
+            };
+            
+            // 转换为JSON
+            jsonString = JsonUtility.ToJson(data);
+            
+            // 更新UI
+            UpdateRobotUI();
+            
+            // 设置同步标志以避免处理自己的更新
+            isSyncing = true;
+            
+            // 更新房间属性
+            roomClient.Room[networkIdString] = jsonString;
         }
     }
 

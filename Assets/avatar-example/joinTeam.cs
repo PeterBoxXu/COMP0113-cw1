@@ -8,6 +8,8 @@ namespace Ubiq.Samples
     public class joinTeam : MonoBehaviour
     {
         public SocialMenu mainObject;
+
+        // public GameObject
         public Transform spawnPoint;
         public GameObject xrRig;
         private bool shouldTeleport = false;
@@ -24,17 +26,26 @@ namespace Ubiq.Samples
 
         public void JoinRedTeam(){
             shouldTeleport = true;
-            mainObject.roomClient.Join(CreateRoom.redRoomId);
             Debug.Log(CreateRoom.redRoomId);
+            foreach (var roomClient in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
+            {
+                roomClient.Join(CreateRoom.redRoomId);
+            }
         }
         public void JoinBlueTeam(){
             shouldTeleport = true;
-            mainObject.roomClient.Join(CreateRoom.blueRoomId);
+            foreach (var roomClient in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
+            {
+                roomClient.Join(CreateRoom.blueRoomId);
+            }
             Debug.Log(CreateRoom.blueRoomId);
         }
         public void JoinGame(){
             shouldTeleport = true;
-            mainObject.roomClient.Join(CreateRoom.gameRoomId);
+            foreach (var roomClient in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
+            {
+                roomClient.Join(CreateRoom.gameRoomId);
+            }
             Debug.Log(CreateRoom.gameRoomId);
         }
 
