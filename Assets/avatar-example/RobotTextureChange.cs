@@ -18,13 +18,15 @@ public class RobotTextureChange : MonoBehaviour
     private string uuid;
     private RoomClient roomClient;
 
-    private Material cached; // 用于 GetMaterial 的缓存，请仅使用 uuid 来引用该材质
+    private Material cached; 
 
     private void Start()
     {
         roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
         avatar = GetComponent<Avatar>();
+        
         roomClient.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdated);
+        // OnMaterialChanged.AddListener(ApplyMaterialToMeshes);
     }
 
     private void OnDestroy()
@@ -74,16 +76,16 @@ public class RobotTextureChange : MonoBehaviour
             this.cached = material;
             OnMaterialChanged.Invoke(material);
 
-            SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            foreach (var renderer in allRenderers)
-            {
-                if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
-                    renderer.gameObject.name.Contains("Body") ||
-                    renderer.gameObject.name.Contains("Chassis"))
-                {
-                    renderer.material = material;
-                }
-            }
+            // SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            // foreach (var renderer in allRenderers)
+            // {
+            //     if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
+            //         renderer.gameObject.name.Contains("Body") ||
+            //         renderer.gameObject.name.Contains("Chassis"))
+            //     {
+            //         renderer.material = material;
+            //     }
+            // }
 
             if (avatar.IsLocal)
             {
@@ -91,9 +93,35 @@ public class RobotTextureChange : MonoBehaviour
             }
         }
     }
-
+    public void ApplyMaterialToMeshes()
+    {
+        var material = this.cached;
+        Debug.Log("更改材质");
+        if (material == null)
+        {
+            return;
+        }
+        
+        SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        int appliedCount = 0;
+        
+        foreach (var renderer in allRenderers)
+        {
+            if (renderer == null) continue;
+            
+            if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
+                renderer.gameObject.name.Contains("Body") ||
+                renderer.gameObject.name.Contains("Chassis"))
+            {
+                renderer.material = material;
+            }
+        }
+        
+        Debug.Log($"Applied material to {appliedCount} renderers");
+    }
     public Material GetMaterial()
     {
         return cached;
     }
+
 }
