@@ -16,13 +16,25 @@ namespace Ubiq.Samples.Social
             }
         public AvatarManager avatarManager;
         public NetworkedRobot robot;
-        public RobotTexture catalogue;
+        public RobotMaterial catalogue;
         public GameObject newAvatarPrefab;
         private NetworkScene networkScene;
         private RoomClient roomclient;
 
         private void Start()
+
         {
+            var avatar1 = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
+            Debug.Log($"11111111{avatar1}");
+             if (!networkScene)
+            {
+                networkScene = NetworkScene.Find(this);
+                if (!networkScene)
+                {
+                    Debug.LogError("NetworkScene not found.");
+                    return;
+                }
+            }
             if (robot == null)
             {
                 Debug.LogError("Robot reference is missing!");
@@ -39,9 +51,11 @@ namespace Ubiq.Samples.Social
                 Debug.LogWarning("Robot jsonString is empty!");
                 return;
             }
-            avatarManager.avatarPrefab = newAvatarPrefab;
-            // avatarManager.UpdateAvatar();
 
+            avatarManager.avatarPrefab = newAvatarPrefab;
+            // avatar = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
+            // Debug.Log(avatar);
+            avatarManager.UpdateAvatar();
             RobotData robotData = JsonUtility.FromJson<RobotData>(robot.jsonString);
             Debug.Log(robotData.body);
 
@@ -50,7 +64,7 @@ namespace Ubiq.Samples.Social
                 Debug.Log(robotData);
                 ApplyBody(robotData.body);
             }
-            avatarManager.UpdateAvatar();
+            //avatarManager.UpdateAvatar();
         }
 
         private void ApplyBody(int bodyIndex)
@@ -75,13 +89,17 @@ namespace Ubiq.Samples.Social
             if (bodyIndex >= 0 && bodyIndex < catalogue.Count)
             {
                 var avatar = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
+                //Debug.Log(avatar);
+                 Debug.Log($"44444444444444444{avatar}");
                 var texturedAvatar = avatar.GetComponent<RobotTextureChange>();
+                Debug.Log(texturedAvatar);
+                Debug.Log(texturedAvatar);
                 if (texturedAvatar)
                 {
                     Debug.Log("运行");
                     Debug.Log($" {catalogue.Get(bodyIndex)}");
-                    texturedAvatar.SetTexture(catalogue.Get(bodyIndex));
-                    //avatarManager.UpdateAvatar();
+                    texturedAvatar.SetMaterial(catalogue.Get(bodyIndex));
+                    // avatarManager.UpdateAvatar();
                     Debug.Log("成功");
                 }
                 else{

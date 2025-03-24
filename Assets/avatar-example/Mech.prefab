@@ -144,8 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e1de9700ff28443a9965d2e41f5975b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Textures: {fileID: 11400000, guid: dc1a81577868f4e44bdeff0df978d324, type: 2}
-  OnTextureChanged:
+  Materials: {fileID: 11400000, guid: 929d992665e6e4aea95cc7f6a84b7490, type: 2}
+  OnMaterialChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &7016184876015045021
@@ -469,6 +469,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 137794024807100558, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2d306e2f40d5872469a1ebc3e86e2cea, type: 2}
     - target: {fileID: 4384927295999416829, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
       propertyPath: m_Enabled
       value: 0

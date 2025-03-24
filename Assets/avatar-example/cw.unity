@@ -13179,6 +13179,7 @@ Transform:
   - {fileID: 1157410876}
   - {fileID: 1130659197}
   - {fileID: 2090027646}
+  - {fileID: 1634966160}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &721475089
@@ -17704,7 +17705,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2064368714}
-  - {fileID: 1634966160}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1043142591
@@ -19266,7 +19266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   avatarManager: {fileID: 1712257666}
   robot: {fileID: 1157410877}
-  catalogue: {fileID: 11400000, guid: dc1a81577868f4e44bdeff0df978d324, type: 2}
+  catalogue: {fileID: 11400000, guid: 929d992665e6e4aea95cc7f6a84b7490, type: 2}
   newAvatarPrefab: {fileID: 3172939939781028348, guid: 3ce2415e4e13e498b931120db024fb25, type: 3}
 --- !u!1 &1108208951 stripped
 GameObject:
@@ -20413,8 +20413,9 @@ GameObject:
   - component: {fileID: 1157410877}
   - component: {fileID: 1157410879}
   - component: {fileID: 1157410878}
+  - component: {fileID: 1157410880}
   m_Layer: 0
-  m_Name: Mech (Static)
+  m_Name: 'Mech '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20493,6 +20494,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1157410880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157410875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e1de9700ff28443a9965d2e41f5975b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Materials: {fileID: 11400000, guid: 929d992665e6e4aea95cc7f6a84b7490, type: 2}
+  OnMaterialChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1164355288
@@ -27237,7 +27254,7 @@ Transform:
   m_GameObject: {fileID: 1634966159}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 59.45, y: 1.1107529, z: -113.22249}
+  m_LocalPosition: {x: 31.826815, y: 0.82600003, z: 21.420088}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -27251,7 +27268,7 @@ Transform:
   - {fileID: 1828754074}
   - {fileID: 979060288}
   - {fileID: 1153855688}
-  m_Father: {fileID: 1042933126}
+  m_Father: {fileID: 721475088}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1634966161
 MonoBehaviour:
@@ -27418,7 +27435,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634966159}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3457670ecf9b040d296d45ca15496c12, type: 3}
   m_Name: 

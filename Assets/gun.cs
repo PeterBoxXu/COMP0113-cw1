@@ -1,7 +1,7 @@
 using UnityEngine;
 using Ubiq.Messaging;
 
-public class GunPositionSync : MonoBehaviour
+public class Gun : MonoBehaviour
 {
     private NetworkContext context;
 
@@ -25,13 +25,14 @@ public class GunPositionSync : MonoBehaviour
     private void FixedUpdate()
     {
         // 持续广播位置
+        Debug.Log("1111");
         context.SendJson(new SyncMessage(transform.position));
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage msg)
     {
         var data = msg.FromJson<SyncMessage>();
-
+        Debug.Log("3333333333333333");
         transform.position = data.position;
     }
 }

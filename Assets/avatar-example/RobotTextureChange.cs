@@ -8,94 +8,91 @@ using Ubiq.Messaging;
 
 public class RobotTextureChange : MonoBehaviour
 {
-    public RobotTexture Textures;
+    public RobotMaterial Materials;
 
     [Serializable]
-    public class TextureEvent : UnityEvent<Texture2D> { }
-    public TextureEvent OnTextureChanged;
+    public class MaterialEvent : UnityEvent<Material> { }
+    public MaterialEvent OnMaterialChanged;
 
     private Avatar avatar;
     private string uuid;
     private RoomClient roomClient;
 
-    private Texture2D cached; // Cache for GetTexture. Do not do anything else with this; use the uuid
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Material cached; // 用于 GetMaterial 的缓存，请仅使用 uuid 来引用该材质
+
     private void Start()
     {
         roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
-        
         avatar = GetComponent<Avatar>();
-        
         roomClient.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdated);
     }
+
     private void OnDestroy()
     {
-        // Cleanup the event for new properties so it does not get called after
         if (roomClient)
         {
             roomClient.OnPeerUpdated.RemoveListener(RoomClient_OnPeerUpdated);
         }
     }
+
     void RoomClient_OnPeerUpdated(IPeer peer)
     {
         if (peer != avatar.Peer)
         {
-            // The peer who is being updated is not our peer, so we can safely
-            // ignore this event.
+            // 更新的 peer 不是我们的 peer，忽略该事件
             return;
         }
         
-        SetTexture(peer["ubiq.avatar.texture.uuid"]);
+        SetMaterial(peer["ubiq.avatar.material.uuid"]);
     }
-     /// <summary>
-    /// Try to set the Texture by reference to a Texture in the Catalogue. If the Texture is not in the
-    /// catalogue then this method has no effect, as Texture2Ds cannot be streamed yet.
+
+    /// <summary>
+    /// 通过传入 Material 对象尝试设置材质。如果该材质不在目录中，则不做任何处理，
     /// </summary>
-    public void SetTexture(Texture2D texture)
+    public void SetMaterial(Material material)
     {
-        Debug.Log($" {Textures.Get(texture)}");
-        SetTexture(Textures.Get(texture));
+        Debug.Log($"{Materials.Get(material)}");
+        SetMaterial(Materials.Get(material));
     }
 
-    public void SetTexture(string uuid)
+    public void SetMaterial(string uuid)
     {
-        // Debug.Log($"{roomClient1}");
         avatar = GetComponent<Avatar>();
+        Debug.Log($"avatar{avatar}");
+        roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
 
-        if(String.IsNullOrWhiteSpace(uuid))
+        if (string.IsNullOrWhiteSpace(uuid))
         {
             return;
         }
 
         if (this.uuid != uuid)
         {
-            var texture = Textures.Get(uuid);
+            var material = Materials.Get(uuid);
+            //Debug.Log($"material{material}");
             this.uuid = uuid;
-            this.cached = texture;
-            //OnTextureChanged.Invoke(texture);
-            SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            this.cached = material;
+            OnMaterialChanged.Invoke(material);
 
-                
-                // 查找特定的渲染器
+            SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
             foreach (var renderer in allRenderers)
             {
-                    Debug.Log($"Found renderer: {renderer.gameObject.name}");
-                    
-                    if (renderer.gameObject.name == "MediumMechStrikerChassis" || 
-                        renderer.gameObject.name.Contains("Body") || 
-                        renderer.gameObject.name.Contains("Chassis"))
-                    {
-                        renderer.material.SetTexture("_BaseMap", texture);
-                    }
+                if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
+                    renderer.gameObject.name.Contains("Body") ||
+                    renderer.gameObject.name.Contains("Chassis"))
+                {
+                    renderer.material = material;
+                }
             }
-            
-            if(avatar.IsLocal)
+
+            if (avatar.IsLocal)
             {
-                roomClient.Me["ubiq.avatar.texture.uuid"] = this.uuid;
+                roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
             }
         }
     }
-    public Texture2D GetTexture()
+
+    public Material GetMaterial()
     {
         return cached;
     }
