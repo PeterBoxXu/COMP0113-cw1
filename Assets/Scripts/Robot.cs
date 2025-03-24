@@ -66,8 +66,23 @@ public class NetworkedRobot : MonoBehaviour
         
         Debug.Log("Adding room updated listener");
         roomClient.OnRoomUpdated.AddListener(RoomClient_OnRoomUpdated);
+        //新用户进入的时候，自动同步一次信息
+        roomClient.OnPeerAdded.AddListener(RoomClient_OnPeerAdded);
+        SyncRobotState();
+    }
+    private void RoomClient_OnPeerAdded(IPeer peer)
+    {
+    // 避免对自己触发
+    if (peer.uuid == localPeerId)
+    {
+        return;
     }
 
+    Debug.Log($"New peer joined: {peer.uuid}. Syncing current robot state.");
+    
+    // 再次推送当前 JSON，确保新玩家能接收到
+    SyncRobotState();
+    }   
     private void Update()
     {
         // 处理延迟同步
@@ -205,7 +220,7 @@ public class NetworkedRobot : MonoBehaviour
         robotState[0] = 0;
         robotState[1] = 0;
         robotState[2] = 0;
-        
+
         // 立即同步重置状态到网络
         SyncRobotState();
     }
@@ -218,7 +233,7 @@ public class NetworkedRobot : MonoBehaviour
         public int body;
     }
 
-    // 更新UI显示
+    // 更新UI
     private void UpdateRobotUI()
     {
         robotCode++;
@@ -237,7 +252,7 @@ public class NetworkedRobot : MonoBehaviour
         }
     }
     
-    // 安排延迟同步，防止过于频繁的网络更新
+    // 延迟同步，防止过于频繁的网络更新
     private void ScheduleSync()
     {
         pendingSync = true;
@@ -249,28 +264,25 @@ public class NetworkedRobot : MonoBehaviour
             SyncRobotState();
         }
     }
-    
-    // 同步当前机器人状态到所有客户端
+
     private void SyncRobotState()
     {
         if (roomClient != null && roomClient.Room != null)
         {
             lastSyncTime = Time.time;
             
-            // 创建数据对象
             RobotData data = new RobotData
             {
                 leftArm = robotState[0],
                 rightArm = robotState[1],
                 body = robotState[2]
             };
-            
+            Debug.Log(data);
             // 转换为JSON
             jsonString = JsonUtility.ToJson(data);
+            Debug.Log(jsonString);
             
-            // 更新UI
             UpdateRobotUI();
-            
             // 设置同步标志以避免处理自己的更新
             isSyncing = true;
             

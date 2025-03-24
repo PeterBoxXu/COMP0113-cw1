@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: 3444175152561107260}
   - component: {fileID: 2075108970}
   - component: {fileID: 4093855498690803947}
-  - component: {fileID: 964017145659305730}
+  - component: {fileID: 5383426270922999390}
   m_Layer: 0
   m_Name: Mech
   m_TagString: Untagged
@@ -132,21 +132,19 @@ MonoBehaviour:
   OnRightGripUpdate:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &964017145659305730
+--- !u!114 &5383426270922999390
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3172939939781028348}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfbaebc4de9b4d72981f451ceb9c8f2d, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e1de9700ff28443a9965d2e41f5975b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Textures: {fileID: 11400000, guid: 711a32cdfac3cd644a666f4575bf6f22, type: 2}
-  RandomTextureOnSpawn: 1
-  SaveTextureSetting: 1
+  Textures: {fileID: 11400000, guid: dc1a81577868f4e44bdeff0df978d324, type: 2}
   OnTextureChanged:
     m_PersistentCalls:
       m_Calls: []
