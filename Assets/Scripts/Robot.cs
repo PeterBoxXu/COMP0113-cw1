@@ -4,6 +4,13 @@ using UnityEngine.UI;
 using Ubiq.Rooms;
 using Ubiq.Messaging;
 
+public enum MaterialType
+{
+    Blue = 0,
+    Red = 1,
+    Yellow = 2,
+}
+
 public class NetworkedRobot : MonoBehaviour
 {
     public string jsonString;

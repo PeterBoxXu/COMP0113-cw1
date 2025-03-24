@@ -23,21 +23,7 @@ namespace Ubiq.Samples.Social
 
         private void Start()
         {
-            if (networkScene == null)
-            {
-                networkScene = FindObjectOfType<NetworkScene>();
-                Debug.Log("Network scene found: " + (networkScene != null));
-            }
-
-            if (robot == null)
-            {
-                robot = FindObjectOfType<NetworkedRobot>();
-                Debug.Log("Networked robot found: " + (robot != null));
-            }
-
-            var avatar1 = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
-            Debug.Log($"11111111{avatar1}");
-             if (!networkScene)
+            if (!networkScene)
             {
                 networkScene = NetworkScene.Find(this);
                 if (!networkScene)
@@ -48,11 +34,20 @@ namespace Ubiq.Samples.Social
             }
             if (robot == null)
             {
+                robot = FindFirstObjectByType<NetworkedRobot>();
+                Debug.Log("Networked robot found: " + (robot != null));
+            }
+
+            var avatar1 = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
+            Debug.Log($"11111111{avatar1}");
+            
+            if (robot == null)
+            {
                 Debug.LogError("Robot reference is missing!");
                 return;
             }
 
-            LoadJsonFromRobot();
+            //LoadJsonFromRobot();
         }
 
         public void LoadJsonFromRobot()
