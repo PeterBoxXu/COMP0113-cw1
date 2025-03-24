@@ -22,8 +22,19 @@ namespace Ubiq.Samples.Social
         private RoomClient roomclient;
 
         private void Start()
-
         {
+            if (networkScene == null)
+            {
+                networkScene = FindObjectOfType<NetworkScene>();
+                Debug.Log("Network scene found: " + (networkScene != null));
+            }
+
+            if (robot == null)
+            {
+                robot = FindObjectOfType<NetworkedRobot>();
+                Debug.Log("Networked robot found: " + (robot != null));
+            }
+
             var avatar1 = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
             Debug.Log($"11111111{avatar1}");
              if (!networkScene)

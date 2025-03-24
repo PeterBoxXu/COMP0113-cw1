@@ -3235,8 +3235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1a3b4cc71b3f44087f9fb65606b892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 345096376}
-  expandSpeed: 2
 --- !u!114 &217818253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13218,16 +13216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46fb1eedd5302094e99c050ef98dd3fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonString: 
-  logText: {fileID: 1046442282}
-  robotCode: 0
-  leftArmRenderer: {fileID: 0}
-  leftHandRenderer: {fileID: 0}
-  rightArmRenderer: {fileID: 0}
-  rightHandRenderer: {fileID: 0}
-  bodyRenderer: {fileID: 0}
-  robotState: 000000000000000000000000
-  bodyMaterials: []
 --- !u!114 &721475092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16233,8 +16221,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1a3b4cc71b3f44087f9fb65606b892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 295066382}
-  expandSpeed: 2
 --- !u!114 &945883480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20448,24 +20434,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1157410875}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46fb1eedd5302094e99c050ef98dd3fa, type: 3}
+  m_Script: {fileID: 11500000, guid: 90d192c003ad566438584699bf15006e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   jsonString: 
   logText: {fileID: 1046442282}
   robotCode: 0
-  leftArmRenderer: {fileID: 125666619}
-  leftHandRenderer: {fileID: 12135409}
-  rightArmRenderer: {fileID: 1164355290}
-  rightHandRenderer: {fileID: 978321540}
-  bodyRenderer: {fileID: 1930470615}
+  leftArmRenderer: {fileID: 0}
+  leftHandRenderer: {fileID: 0}
+  rightArmRenderer: {fileID: 0}
+  rightHandRenderer: {fileID: 0}
+  bodyRenderer: {fileID: 0}
   robotState: 000000000000000000000000
-  bodyMaterials:
-  - {fileID: 2100000, guid: 2d306e2f40d5872469a1ebc3e86e2cea, type: 2}
-  - {fileID: 2100000, guid: f719d2d9437be4a47b61e1ac9d2354da, type: 2}
-  - {fileID: 2100000, guid: 9f8a246b10b2ada4993a4434635df100, type: 2}
-  - {fileID: 2100000, guid: c9910719dc6474b4da4fb1ca51c03c62, type: 2}
-  - {fileID: 2100000, guid: db4d9882fe4ee014cb36e8ff20b99b67, type: 2}
+  bodyMaterials: []
 --- !u!114 &1157410878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24130,7 +24111,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100af16082afc5c408092207840481ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 1399787638}
 --- !u!65 &1399787638
 BoxCollider:
   m_ObjectHideFlags: 0
