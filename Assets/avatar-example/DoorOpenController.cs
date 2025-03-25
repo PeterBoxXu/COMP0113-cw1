@@ -7,7 +7,6 @@ public class DoorOpenController : MonoBehaviour
 
     public void OnDoorOpen()
     {
-        Debug.Log("Door Opened");
         DoorOpenAnimation.Play();
         LightGreenAnimation.Play();
     }

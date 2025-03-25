@@ -20,7 +20,8 @@ public class NetworkedRobot : MonoBehaviour
     private GameObject leftArm;
     private GameObject rightArm;
 
-    private string networkIdString;
+    //private string networkIdString;
+    private NetworkContext context;
     private RoomClient roomClient;
 
     private void Awake()
@@ -42,29 +43,52 @@ public class NetworkedRobot : MonoBehaviour
 
     private void Start()
     {
-        // Initialize networking
-        networkIdString = NetworkId.Create(this).ToString();
-        roomClient = GetComponentInParent<RoomClient>();
-        roomClient.OnRoomUpdated.AddListener(RoomClient_OnRoomUpdated);
+        context = NetworkScene.Register(this);
+        roomClient = context.Scene.GetComponentInChildren<RoomClient>();
+
+        Debug.Log("context: " + context.Id);
+        Debug.Log("context.Scene: " + context.Scene.transform.name);
+        Debug.Log("roomclient: " + roomClient);
+        //// Initialize networking
+        //networkIdString = NetworkId.Create(this).ToString();
+        //roomClient = GetComponentInParent<RoomClient>();
+        //roomClient.OnPeerUpdated.AddListener(RoomClient_OnRoomUpdated);
     }
 
     private void Update()
     {
-        SyncRobotState();
+        //SyncRobotState();
+        GetRobotData();
+
+        string json = JsonUtility.ToJson(jsonString);
+
+        Send(json);
     }
 
-    private void RoomClient_OnRoomUpdated(IRoom room)
+    private void Send(string json)
     {
-        var robotProperty = room[networkIdString];
-        if (!string.IsNullOrEmpty(robotProperty))
-        {
-            // Parse the JSON data from the room property
-            RobotData data = JsonUtility.FromJson<RobotData>(robotProperty);
-            
-            // Apply the robot configuration based on the parsed data
-            ApplyRobotData(data);
-        }
+        context.SendJson<RobotData>(JsonUtility.FromJson<RobotData>(json));
     }
+
+    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
+    {
+        Debug.Log("72: " + message);
+    }
+
+
+    //private void RoomClient_OnRoomUpdated(IPeer peer)
+    //{
+    //    Debug.Log("Room updated: " + networkIdString);
+    //    var robotProperty = room[networkIdString];
+    //    if (!string.IsNullOrEmpty(robotProperty))
+    //    {
+    //        // Parse the JSON data from the room property
+    //        RobotData data = JsonUtility.FromJson<RobotData>(robotProperty);
+
+    //        // Apply the robot configuration based on the parsed data
+    //        ApplyRobotData(data);
+    //    }
+    //}
 
     // Apply robot data without broadcasting changes
     private void ApplyRobotData(RobotData data)
@@ -302,7 +326,7 @@ public class NetworkedRobot : MonoBehaviour
         // Clear the robot state on the network
         if (roomClient && roomClient.Room != null)
         {
-            roomClient.Room[networkIdString] = "";
+            //roomClient.Room[networkIdString] = "";
         }
     }
 
@@ -354,7 +378,7 @@ public class NetworkedRobot : MonoBehaviour
 
             // Convert to JSON and set as room property
             string json = JsonUtility.ToJson(jsonString);
-            roomClient.Room[networkIdString] = json;
+            //roomClient.Room[networkIdString] = json;
         }
     }
 
