@@ -39141,7 +39141,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7977358763621425423, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
+    - {fileID: 7776456089977726585, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1098280388053514488, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
       insertIndex: 1
@@ -39150,6 +39152,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4241888490173303329, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 510581736}
+    - targetCorrespondingSourceObject: {fileID: 321497875127558722, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1834526176}
     - targetCorrespondingSourceObject: {fileID: 4141168167285308396, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 286878877}
@@ -42723,6 +42728,33 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1832390318}
   m_Mesh: {fileID: 4300000, guid: dde20a633052615419ddfdd28f75a5e2, type: 3}
+--- !u!1 &1834526175 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 321497875127558722, guid: 9753b20d8cb83224290c5c2ca7101ee9, type: 3}
+  m_PrefabInstance: {fileID: 1663448942}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1834526176
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834526175}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -1490387063570498570, guid: 814933d8205635b4bb71a5aadb981b13, type: 3}
 --- !u!1001 &1837606281
 PrefabInstance:
   m_ObjectHideFlags: 0
