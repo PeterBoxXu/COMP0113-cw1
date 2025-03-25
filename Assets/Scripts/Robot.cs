@@ -24,6 +24,16 @@ public class NetworkedRobot : MonoBehaviour
     private NetworkContext context;
     private RoomClient roomClient;
 
+    private float syncInterval = 0.1f;
+    private float syncTimer = 0.0f;
+    public int seqNo = 0;
+
+    private struct Message
+    {
+        public int seqNo;
+        public RobotData data;
+    }
+
     private void Awake()
     {
         robotCode = 0;
@@ -62,17 +72,38 @@ public class NetworkedRobot : MonoBehaviour
 
         string json = JsonUtility.ToJson(jsonString);
 
-        Send(json);
+        syncTimer += Time.deltaTime;
+        if (syncTimer >= syncInterval)
+        {
+            syncTimer = 0.0f;
+            Send(json);
+        }
     }
 
     private void Send(string json)
     {
-        context.SendJson<RobotData>(JsonUtility.FromJson<RobotData>(json));
+        context.SendJson<Message>(new Message()
+        {
+            seqNo = seqNo++,
+            data = JsonUtility.FromJson<RobotData>(json)
+        });
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
     {
         Debug.Log("72: " + message);
+        Message msg = message.FromJson<Message>();
+        if (msg.seqNo < seqNo)
+        {
+            return;
+        }
+        syncTimer = 0.0f;
+        // Parse the JSON data from the room property
+        RobotData data = msg.data;
+
+        // Apply the robot configuration based on the parsed data
+        ApplyRobotData(data);
+        
     }
 
 
@@ -369,19 +400,6 @@ public class NetworkedRobot : MonoBehaviour
         
     }
     
-    // Synchronize the current robot state to all clients
-    private void SyncRobotState()
-    {
-        if (roomClient && roomClient.Room != null)
-        {
-            GetRobotData();
-
-            // Convert to JSON and set as room property
-            string json = JsonUtility.ToJson(jsonString);
-            //roomClient.Room[networkIdString] = json;
-        }
-    }
-
     public void ShowErrorUI()
     {
         logText.text = "Robot incomplete! Please try again.";
