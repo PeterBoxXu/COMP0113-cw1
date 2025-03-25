@@ -78,6 +78,7 @@ public class NetworkedRobot : MonoBehaviour
 
     private void Send(string json)
     {
+        canSend = false;
         context.SendJson<Message>(new Message()
         {
             seqNo = seqNo++,
