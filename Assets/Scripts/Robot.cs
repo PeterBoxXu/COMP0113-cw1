@@ -68,21 +68,20 @@ public class NetworkedRobot : MonoBehaviour
         //SyncRobotState();
         GetRobotData();
         //ApplyRobotData(JsonUtility.FromJson<RobotData>(jsonString));
-        string json = JsonUtility.ToJson(jsonString);
-
         if (canSend)
         {
-            Send(json);
+            Send();
         }
     }
 
-    private void Send(string json)
+    private void Send()
     {
+        Debug.Log("81: Sending: " + jsonString);
         canSend = false;
         context.SendJson<Message>(new Message()
         {
             seqNo = seqNo++,
-            data = JsonUtility.FromJson<RobotData>(json)
+            data = JsonUtility.FromJson<RobotData>(jsonString)
         });
     }
 
@@ -92,8 +91,10 @@ public class NetworkedRobot : MonoBehaviour
         Message msg = message.FromJson<Message>();
         if (msg.seqNo < seqNo)
         {
+            Send();
             return;
         }
+        seqNo = msg.seqNo;
         // Parse the JSON data from the room property
         RobotData data = msg.data;
         jsonString = JsonUtility.ToJson(data);
