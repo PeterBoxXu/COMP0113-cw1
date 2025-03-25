@@ -20,8 +20,19 @@ public class NetworkedRobot : MonoBehaviour
     private GameObject leftArm;
     private GameObject rightArm;
 
-    private string networkIdString;
+    //private string networkIdString;
+    private NetworkContext context;
     private RoomClient roomClient;
+
+    private float syncInterval = 0.1f;
+    private float syncTimer = 0.0f;
+    public int seqNo = 0;
+
+    private struct Message
+    {
+        public int seqNo;
+        public RobotData data;
+    }
 
     private void Awake()
     {
@@ -42,29 +53,73 @@ public class NetworkedRobot : MonoBehaviour
 
     private void Start()
     {
-        // Initialize networking
-        networkIdString = NetworkId.Create(this).ToString();
-        roomClient = GetComponentInParent<RoomClient>();
-        roomClient.OnRoomUpdated.AddListener(RoomClient_OnRoomUpdated);
+        context = NetworkScene.Register(this);
+        roomClient = context.Scene.GetComponentInChildren<RoomClient>();
+
+        Debug.Log("context: " + context.Id);
+        Debug.Log("context.Scene: " + context.Scene.transform.name);
+        Debug.Log("roomclient: " + roomClient);
+        //// Initialize networking
+        //networkIdString = NetworkId.Create(this).ToString();
+        //roomClient = GetComponentInParent<RoomClient>();
+        //roomClient.OnPeerUpdated.AddListener(RoomClient_OnRoomUpdated);
     }
 
     private void Update()
     {
-        SyncRobotState();
-    }
+        //SyncRobotState();
+        GetRobotData();
 
-    private void RoomClient_OnRoomUpdated(IRoom room)
-    {
-        var robotProperty = room[networkIdString];
-        if (!string.IsNullOrEmpty(robotProperty))
+        string json = JsonUtility.ToJson(jsonString);
+
+        syncTimer += Time.deltaTime;
+        if (syncTimer >= syncInterval)
         {
-            // Parse the JSON data from the room property
-            RobotData data = JsonUtility.FromJson<RobotData>(robotProperty);
-            
-            // Apply the robot configuration based on the parsed data
-            ApplyRobotData(data);
+            syncTimer = 0.0f;
+            Send(json);
         }
     }
+
+    private void Send(string json)
+    {
+        context.SendJson<Message>(new Message()
+        {
+            seqNo = seqNo++,
+            data = JsonUtility.FromJson<RobotData>(json)
+        });
+    }
+
+    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
+    {
+        Debug.Log("72: " + message);
+        Message msg = message.FromJson<Message>();
+        if (msg.seqNo < seqNo)
+        {
+            return;
+        }
+        syncTimer = 0.0f;
+        // Parse the JSON data from the room property
+        RobotData data = msg.data;
+
+        // Apply the robot configuration based on the parsed data
+        ApplyRobotData(data);
+        
+    }
+
+
+    //private void RoomClient_OnRoomUpdated(IPeer peer)
+    //{
+    //    Debug.Log("Room updated: " + networkIdString);
+    //    var robotProperty = room[networkIdString];
+    //    if (!string.IsNullOrEmpty(robotProperty))
+    //    {
+    //        // Parse the JSON data from the room property
+    //        RobotData data = JsonUtility.FromJson<RobotData>(robotProperty);
+
+    //        // Apply the robot configuration based on the parsed data
+    //        ApplyRobotData(data);
+    //    }
+    //}
 
     // Apply robot data without broadcasting changes
     private void ApplyRobotData(RobotData data)
@@ -302,7 +357,7 @@ public class NetworkedRobot : MonoBehaviour
         // Clear the robot state on the network
         if (roomClient && roomClient.Room != null)
         {
-            roomClient.Room[networkIdString] = "";
+            //roomClient.Room[networkIdString] = "";
         }
     }
 
@@ -345,19 +400,6 @@ public class NetworkedRobot : MonoBehaviour
         
     }
     
-    // Synchronize the current robot state to all clients
-    private void SyncRobotState()
-    {
-        if (roomClient && roomClient.Room != null)
-        {
-            GetRobotData();
-
-            // Convert to JSON and set as room property
-            string json = JsonUtility.ToJson(jsonString);
-            roomClient.Room[networkIdString] = json;
-        }
-    }
-
     public void ShowErrorUI()
     {
         logText.text = "Robot incomplete! Please try again.";
