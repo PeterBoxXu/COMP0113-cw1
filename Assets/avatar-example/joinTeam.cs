@@ -11,23 +11,21 @@ namespace Ubiq.Samples
 
         // public GameObject
         public GameObject doorOpenController;
-        //public Transform spawnPoint;
+        public Transform fightSpawnPoint;
         public GameObject xrRig;
         private bool shouldTeleport = false;
 
-        //private void OnEnable()
-        //{
-        //    mainObject.roomClient.OnJoinedRoom.AddListener(doorOpenController.OnDoorOpen);
-        //}
+        private void OnEnable()
+        {
+            mainObject.roomClient.OnJoinedRoom.AddListener(OnRoomJoined);
+        }
 
-        //private void OnDisable()
-        //{
-        //    //mainObject.roomClient.OnJoinedRoom.RemoveListener(OnRoomJoined);
-        //    mainObject.roomClient.OnJoinedRoom.RemoveListener(doorOpenController.OnDoorOpen);
-        //}
+        private void OnDisable()
+        {
+            mainObject.roomClient.OnJoinedRoom.RemoveListener(OnRoomJoined);
+        }
 
         public void JoinRedTeam(){
-            shouldTeleport = true;
             Debug.Log(CreateRoom.redRoomId);
             foreach (var roomClient in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
             {
@@ -36,7 +34,6 @@ namespace Ubiq.Samples
             doorOpenController.GetComponent<DoorOpenController>().OnDoorOpen();
         }
         public void JoinBlueTeam(){
-            shouldTeleport = true;
             foreach (var roomClient in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
             {
                 roomClient.Join(CreateRoom.blueRoomId);
@@ -54,17 +51,17 @@ namespace Ubiq.Samples
             Debug.Log(CreateRoom.gameRoomId);
         }
 
-        //private void OnRoomJoined(IRoom room)
-        //{
-        //    if (shouldTeleport && xrRig != null && spawnPoint != null)
-        //    {
-        //        xrRig.transform.position = spawnPoint.position;
-        //        xrRig.transform.rotation = spawnPoint.rotation;
-        //        Debug.Log("Player moved to spawn point");
+        private void OnRoomJoined(IRoom room)
+        {
+            if (shouldTeleport && xrRig != null && fightSpawnPoint != null)
+            {
+                xrRig.transform.position = fightSpawnPoint.position;
+                xrRig.transform.rotation = fightSpawnPoint.rotation;
+                Debug.Log("Player moved to spawn point");
 
-        //        shouldTeleport = false;
-        //    }
-        //}
+                shouldTeleport = false;
+            }
+        }
     }
 
 }

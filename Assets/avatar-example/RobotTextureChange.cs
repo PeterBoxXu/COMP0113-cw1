@@ -5,6 +5,8 @@ using UnityEngine;
 using Avatar = Ubiq.Avatars.Avatar;
 using Ubiq.Rooms;
 using Ubiq.Messaging;
+using System.Runtime.InteropServices;
+using Ubiq.Samples.Social;
 
 public class RobotTextureChange : MonoBehaviour
 {
@@ -17,111 +19,160 @@ public class RobotTextureChange : MonoBehaviour
     private Avatar avatar;
     private string uuid;
     private RoomClient roomClient;
-
-    private Material cached; 
-
+    private AvatarJsonController avatarJsonController;
+    private Material cached;
+    private NetworkContext context;
+    private Transform networkSceneRoot;
+    private bool changeMat = false;
+    
     private void Start()
     {
-        roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
-        avatar = GetComponent<Avatar>();
-        
-        roomClient.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdated);
-        // OnMaterialChanged.AddListener(ApplyMaterialToMeshes);
+        if (!avatar)
+        {
+            avatar = GetComponentInParent<Avatar>();
+            if (!avatar)
+            {
+                Debug.LogWarning("No Avatar could be found among parents. This script will be disabled.");
+                enabled = false;
+                return;
+            }
+        }
+        context = NetworkScene.Register(this, NetworkId.Create(avatar.NetworkId, nameof(RobotTextureChange)));
+        networkSceneRoot = context.Scene.transform;
+        roomClient = context.Scene.GetComponentInChildren<RoomClient>();
+        avatarJsonController = context.Scene.GetComponentInChildren<AvatarJsonController>();
+
+        Debug.Log($"name {name},  roomClient" + roomClient);
+        Debug.Log($"name {name}, roomClient.Me" + roomClient.Me);
+        Debug.Assert(roomClient != null, "RoomClient not found in scene");
+        Debug.Assert(roomClient.Me != null, "RoomClient.Me is null");
+        ////roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
+        //avatar = GetComponent<Avatar>();
+        //// if (avatar.IsLocal)
+        //// {
+        ////     SetMaterial(Materials.Get(0));
+        //// }
+
+        //foreach (var roomClient1 in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
+        //{
+        //    if (roomClient1.gameObject.name == "peer")
+        //    {
+        //        roomClient = roomClient1;
+        //        roomClient1.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdatedMaterial);
+        //    }
+        //}
+        roomClient.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdatedMaterial);
+
+        SetMaterial(avatarJsonController.GetBodyMaterial());
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        if (roomClient)
+        if (changeMat)
         {
-            roomClient.OnPeerUpdated.RemoveListener(RoomClient_OnPeerUpdated);
+            Debug.Log("changeMat");
+            changeMat = false;
+            roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
+
+            avatarJsonController.LoadJsonFromRobot();
         }
     }
 
-    void RoomClient_OnPeerUpdated(IPeer peer)
+    private void Send()
+    {
+        Debug.LogWarning("Send");
+        //var transformBytes = MemoryMarshal.AsBytes(new ReadOnlySpan<State>(state));
+
+        //var message = ReferenceCountedSceneGraphMessage.Rent(transformBytes.Length);
+        //transformBytes.CopyTo(new Span<byte>(message.bytes, message.start, message.length));
+
+        //context.Send(message);
+    }
+
+    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
+    {
+        Debug.LogWarning($"ProcessMessage, message: {message}");
+        //MemoryMarshal.Cast<byte, State>(
+        //        new ReadOnlySpan<byte>(message.bytes, message.start, message.length))
+        //    .CopyTo(new Span<State>(state));
+        //OnStateChange();
+    }
+
+
+    void RoomClient_OnPeerUpdatedMaterial(IPeer peer)
     {
         if (peer != avatar.Peer)
         {
-            // 更新的 peer 不是我们的 peer，忽略该事件
+            // The peer who is being updated is not our peer, so we can safely
+            // ignore this event.
             return;
         }
-        
+        Debug.Log($"91: {name}, peer[\"ubiq.avatar.material.uuid\"] = " + peer["ubiq.avatar.material.uuid"]);
         SetMaterial(peer["ubiq.avatar.material.uuid"]);
     }
 
-    /// <summary>
-    /// 通过传入 Material 对象尝试设置材质。如果该材质不在目录中，则不做任何处理，
-    /// </summary>
     public void SetMaterial(Material material)
     {
-        Debug.Log($"{Materials.Get(material)}");
         SetMaterial(Materials.Get(material));
     }
 
     public void SetMaterial(string uuid)
     {
-        avatar = GetComponent<Avatar>();
-        Debug.Log($"avatar{avatar}");
-        roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
-
+        Debug.Log($"102: this.uuid: {this.uuid}, param uuid: {uuid}");
         if (string.IsNullOrWhiteSpace(uuid))
         {
             return;
         }
-
         if (this.uuid != uuid)
         {
             var material = Materials.Get(uuid);
-            //Debug.Log($"material{material}");
+            Debug.Log($"12345material{material}");
             this.uuid = uuid;
             this.cached = material;
+            this.changeMat = true;
+
             OnMaterialChanged.Invoke(material);
+           
+            //if (avatar == null)
+            //{ avatar = GetComponent<Avatar>(); }
 
-            // SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            // foreach (var renderer in allRenderers)
-            // {
-            //     if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
-            //         renderer.gameObject.name.Contains("Body") ||
-            //         renderer.gameObject.name.Contains("Chassis"))
-            //     {
-            //         renderer.material = material;
-            //     }
-            // }
+            //if (avatar.IsLocal)
+            //{
+            //    Debug.Log($"154 name {name}, roomClient:{roomClient}");
+            //    Debug.Log($"aaaaaaaaaaaaaaaaaaaaaaaaaaaa,{roomClient.Me["ubiq.avatar.material.uuid"]}");
+            //}
 
-            if (avatar.IsLocal)
-            {
-                roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
-            }
+            //ApplyMaterialToMeshes(material);
         }
     }
-    public void ApplyMaterialToMeshes()
-    {
-        var material = this.cached;
-        Debug.Log("更改材质");
-        if (material == null)
-        {
-            return;
-        }
-        
-        SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
-        int appliedCount = 0;
-        
-        foreach (var renderer in allRenderers)
-        {
-            if (renderer == null) continue;
-            
-            if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
-                renderer.gameObject.name.Contains("Body") ||
-                renderer.gameObject.name.Contains("Chassis"))
-            {
-                renderer.material = material;
-            }
-        }
-        
-        Debug.Log($"Applied material to {appliedCount} renderers");
-    }
+
+    // public void ApplyMaterialToMeshes(Material material)
+    // {
+    //     Debug.Log("更改材质");
+    //     if (material == null)
+    //     {
+    //         return;
+    //     }
+
+    //     SkinnedMeshRenderer[] allRenderers = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+    //     int appliedCount = 0;
+
+    //     foreach (var renderer in allRenderers)
+    //     {
+    //         if (renderer == null) continue;
+    //         if (renderer.gameObject.name == "MediumMechStrikerChassis" ||
+    //             renderer.gameObject.name.Contains("Body") ||
+    //             renderer.gameObject.name.Contains("Chassis"))
+    //         {
+    //             renderer.material = material;
+    //         }
+    //     }
+
+    //     Debug.Log($"Applied material to {appliedCount} renderers");
+    // }
+
     public Material GetMaterial()
     {
         return cached;
     }
-
 }

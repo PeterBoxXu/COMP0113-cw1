@@ -53,7 +53,8 @@ MonoBehaviour:
   torso: {fileID: 7427944542806531184}
   leftHand: {fileID: 1670691965516823129}
   rightHand: {fileID: 2449942412599080710}
-  headRenderer: {fileID: 0}
+  skinnedMeshRenderer: {fileID: 6082539532970951938}
+  headRenderer: {fileID: 6082539532970951938}
   leftHandRenderer: {fileID: 7334439582218619413}
   rightHandRenderer: {fileID: 8872847408095800358}
 --- !u!1 &3172939939781028348
@@ -85,7 +86,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.227, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6758063930058808772}
@@ -509,6 +510,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+--- !u!137 &6082539532970951938 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 137794024807100558, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+  m_PrefabInstance: {fileID: 6160941427159037324}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &6112118468680263666 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 95302132483740286, guid: 077155289d2e14247bd0864b560f74ac, type: 3}

@@ -50,18 +50,15 @@ namespace Ubiq.Samples.Social
             //LoadJsonFromRobot();
         }
 
+        public Material GetBodyMaterial()
+        {
+            RobotData robotData = JsonUtility.FromJson<RobotData>(robot.jsonString);
+            int bodyIndex = robotData.body;
+            return catalogue.Get(bodyIndex);
+        }
+
         public void LoadJsonFromRobot()
         {
-            if (string.IsNullOrEmpty(robot.jsonString))
-            {
-                Debug.LogWarning("Robot jsonString is empty!");
-                return;
-            }
-
-            avatarManager.avatarPrefab = newAvatarPrefab;
-            // avatar = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
-            // Debug.Log(avatar);
-            avatarManager.UpdateAvatar();
             RobotData robotData = JsonUtility.FromJson<RobotData>(robot.jsonString);
             Debug.Log(robotData.body);
 
@@ -70,7 +67,6 @@ namespace Ubiq.Samples.Social
                 Debug.Log(robotData);
                 ApplyBody(robotData.body);
             }
-            //avatarManager.UpdateAvatar();
         }
 
         private void ApplyBody(int bodyIndex)
@@ -98,7 +94,6 @@ namespace Ubiq.Samples.Social
                 //Debug.Log(avatar);
                  Debug.Log($"44444444444444444{avatar}");
                 var texturedAvatar = avatar.GetComponent<RobotTextureChange>();
-                Debug.Log(texturedAvatar);
                 Debug.Log(texturedAvatar);
                 if (texturedAvatar)
                 {

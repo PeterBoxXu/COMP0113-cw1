@@ -15,12 +15,15 @@ public class MechAvatar : MonoBehaviour
     public Transform torso;
     public Transform leftHand;
     public Transform rightHand;
-
+    public SkinnedMeshRenderer skinnedMeshRenderer;
 
     public Renderer headRenderer;
+
+
     private HeadAndHandsAvatar headAndHandsAvatar;
     public Renderer leftHandRenderer;
     public Renderer rightHandRenderer;
+    private RobotTextureChange robotChange;
 
     private Avatar avatar;
     private InputVar<Pose> lastGoodHeadPose;
@@ -48,6 +51,8 @@ public class MechAvatar : MonoBehaviour
              headAndHandsAvatar.OnLeftHandUpdate.AddListener(HeadAndHandsEvents_OnLeftHandUpdate);
             headAndHandsAvatar.OnRightHandUpdate.AddListener(HeadAndHandsEvents_OnRightHandUpdate);
         }
+        robotChange = GetComponentInParent<RobotTextureChange>();
+        robotChange.OnMaterialChanged.AddListener(robotMaterialChange);
     }
 
     private void OnDisable()
@@ -58,6 +63,7 @@ public class MechAvatar : MonoBehaviour
              headAndHandsAvatar.OnLeftHandUpdate.RemoveListener(HeadAndHandsEvents_OnLeftHandUpdate);
             headAndHandsAvatar.OnRightHandUpdate.RemoveListener(HeadAndHandsEvents_OnRightHandUpdate);
         }
+        robotChange.OnMaterialChanged.RemoveListener(robotMaterialChange);
     }
 
     private void HeadAndHandsEvents_OnHeadUpdate(InputVar<Pose> pose)
@@ -74,7 +80,7 @@ public class MechAvatar : MonoBehaviour
         }
         
         head.position = pose.value.position;
-        head.rotation = Quaternion.Euler(0, pose.value.rotation.eulerAngles.y, 0);     
+        head.rotation = Quaternion.Euler(0, pose.value.rotation.eulerAngles.y, 0);        
         if (lastGoodHeadPose.value == pose.value)
         {
             animator.SetBool("walking", false);
@@ -112,11 +118,9 @@ public class MechAvatar : MonoBehaviour
         rightHand.rotation = pose.value.rotation;
     }
 
-    private void TexturedAvatar_OnTextureChanged(Texture2D tex)
+   private void robotMaterialChange(Material material)
     {
-        headRenderer.material.mainTexture = tex;
-         leftHandRenderer.material = headRenderer.material;
-        rightHandRenderer.material = headRenderer.material;
+        skinnedMeshRenderer.material = material;
     }
 
     private void Update()
