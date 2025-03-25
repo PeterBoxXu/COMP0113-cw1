@@ -94,7 +94,7 @@ public class NetworkedRobot : MonoBehaviour
             Send();
             return;
         }
-        seqNo = msg.seqNo;
+        seqNo = msg.seqNo + 1;
         // Parse the JSON data from the room property
         RobotData data = msg.data;
         jsonString = JsonUtility.ToJson(data);
