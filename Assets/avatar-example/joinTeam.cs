@@ -10,19 +10,21 @@ namespace Ubiq.Samples
         public SocialMenu mainObject;
 
         // public GameObject
-        public Transform spawnPoint;
+        public GameObject doorOpenController;
+        //public Transform spawnPoint;
         public GameObject xrRig;
         private bool shouldTeleport = false;
-  
-        private void OnEnable()
-        {
-            mainObject.roomClient.OnJoinedRoom.AddListener(OnRoomJoined);
-        }
 
-        private void OnDisable()
-        {
-            mainObject.roomClient.OnJoinedRoom.RemoveListener(OnRoomJoined);
-        }
+        //private void OnEnable()
+        //{
+        //    mainObject.roomClient.OnJoinedRoom.AddListener(doorOpenController.OnDoorOpen);
+        //}
+
+        //private void OnDisable()
+        //{
+        //    //mainObject.roomClient.OnJoinedRoom.RemoveListener(OnRoomJoined);
+        //    mainObject.roomClient.OnJoinedRoom.RemoveListener(doorOpenController.OnDoorOpen);
+        //}
 
         public void JoinRedTeam(){
             shouldTeleport = true;
@@ -31,6 +33,7 @@ namespace Ubiq.Samples
             {
                 roomClient.Join(CreateRoom.redRoomId);
             }
+            doorOpenController.GetComponent<DoorOpenController>().OnDoorOpen();
         }
         public void JoinBlueTeam(){
             shouldTeleport = true;
@@ -39,6 +42,8 @@ namespace Ubiq.Samples
                 roomClient.Join(CreateRoom.blueRoomId);
             }
             Debug.Log(CreateRoom.blueRoomId);
+
+            doorOpenController.GetComponent<DoorOpenController>().OnDoorOpen();
         }
         public void JoinGame(){
             shouldTeleport = true;
@@ -49,17 +54,17 @@ namespace Ubiq.Samples
             Debug.Log(CreateRoom.gameRoomId);
         }
 
-        private void OnRoomJoined(IRoom room)
-        {
-            if (shouldTeleport && xrRig != null && spawnPoint != null)
-            {
-                xrRig.transform.position = spawnPoint.position;
-                xrRig.transform.rotation = spawnPoint.rotation;
-                Debug.Log("Player moved to spawn point");
+        //private void OnRoomJoined(IRoom room)
+        //{
+        //    if (shouldTeleport && xrRig != null && spawnPoint != null)
+        //    {
+        //        xrRig.transform.position = spawnPoint.position;
+        //        xrRig.transform.rotation = spawnPoint.rotation;
+        //        Debug.Log("Player moved to spawn point");
 
-                shouldTeleport = false;
-            }
-        }
+        //        shouldTeleport = false;
+        //    }
+        //}
     }
 
 }

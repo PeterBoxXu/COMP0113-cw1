@@ -9,6 +9,7 @@ using Avatar = Ubiq.Avatars.Avatar;
 /// </summary>
 public class MechAvatar : MonoBehaviour
 {
+    public Animator animator;
     public Transform head;
     public Transform torsoBase;
     public Transform torso;
@@ -73,7 +74,15 @@ public class MechAvatar : MonoBehaviour
         }
         
         head.position = pose.value.position;
-        head.rotation = Quaternion.Euler(0, pose.value.rotation.eulerAngles.y, 0);        
+        head.rotation = Quaternion.Euler(0, pose.value.rotation.eulerAngles.y, 0);     
+        if (lastGoodHeadPose.value == pose.value)
+        {
+            animator.SetBool("walking", false);
+        }
+        else
+        {
+            animator.SetBool("walking", true);
+        }
         lastGoodHeadPose = pose;
     }
 

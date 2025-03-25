@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b5c9a629bb6499ea5bbabd8132c5c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 6112118468680263666}
   head: {fileID: 6758063930058808772}
   torsoBase: {fileID: 5293104829431841510}
   torso: {fileID: 7427944542806531184}
@@ -508,6 +509,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+--- !u!95 &6112118468680263666 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95302132483740286, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+  m_PrefabInstance: {fileID: 6160941427159037324}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6165501692929642382 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4587756876036610, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
