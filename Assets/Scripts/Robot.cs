@@ -24,10 +24,8 @@ public class NetworkedRobot : MonoBehaviour
     private NetworkContext context;
     private RoomClient roomClient;
 
-    private float syncInterval = 0.1f;
-    private float syncTimer = 0.0f;
-    public int seqNo = 0;
-
+    private bool canSend = false;
+    private int seqNo = 0;
     private struct Message
     {
         public int seqNo;
@@ -69,13 +67,11 @@ public class NetworkedRobot : MonoBehaviour
     {
         //SyncRobotState();
         GetRobotData();
-
+        //ApplyRobotData(JsonUtility.FromJson<RobotData>(jsonString));
         string json = JsonUtility.ToJson(jsonString);
 
-        syncTimer += Time.deltaTime;
-        if (syncTimer >= syncInterval)
+        if (canSend)
         {
-            syncTimer = 0.0f;
             Send(json);
         }
     }
@@ -97,9 +93,9 @@ public class NetworkedRobot : MonoBehaviour
         {
             return;
         }
-        syncTimer = 0.0f;
         // Parse the JSON data from the room property
         RobotData data = msg.data;
+        jsonString = JsonUtility.ToJson(data);
 
         // Apply the robot configuration based on the parsed data
         ApplyRobotData(data);
@@ -213,6 +209,7 @@ public class NetworkedRobot : MonoBehaviour
     {
         if (0 <= color && color < bodyMaterials.Length)
         {
+            canSend = true;
             Material m = bodyMaterials[color];
             bodyRenderer.material = m;
             robotState[2] = color;
@@ -223,6 +220,7 @@ public class NetworkedRobot : MonoBehaviour
     {
         if (0 <= color && color < bodyMaterials.Length)
         {
+            canSend = true;
             Material m = bodyMaterials[color];
             leftArmRenderer.material = m;
             if (leftHandRenderer != null)
@@ -237,6 +235,7 @@ public class NetworkedRobot : MonoBehaviour
     {
         if (0 <= color && color < bodyMaterials.Length)
         {
+            canSend = true;
             Material m = bodyMaterials[color];
             rightArmRenderer.material = m;
             if (rightHandRenderer != null)
@@ -289,6 +288,7 @@ public class NetworkedRobot : MonoBehaviour
 
         if (0 <= type && type < armPrefabs.Length)
         {
+            canSend = true;
             GameObject arm = Instantiate(armPrefabs[type]);
             if (isLeft)
             {
@@ -357,6 +357,7 @@ public class NetworkedRobot : MonoBehaviour
         // Clear the robot state on the network
         if (roomClient && roomClient.Room != null)
         {
+            canSend = true;
             //roomClient.Room[networkIdString] = "";
         }
     }
