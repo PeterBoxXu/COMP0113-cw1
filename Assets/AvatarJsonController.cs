@@ -37,17 +37,6 @@ namespace Ubiq.Samples.Social
                 robot = FindFirstObjectByType<NetworkedRobot>();
                 Debug.Log("Networked robot found: " + (robot != null));
             }
-
-            var avatar1 = networkScene.GetComponentInChildren<AvatarManager>().LocalAvatar;
-            Debug.Log($"11111111{avatar1}");
-            
-            if (robot == null)
-            {
-                Debug.LogError("Robot reference is missing!");
-                return;
-            }
-
-            //LoadJsonFromRobot();
         }
 
         public Material GetBodyMaterial()
@@ -59,6 +48,7 @@ namespace Ubiq.Samples.Social
 
         public void LoadJsonFromRobot()
         {
+            Debug.Log($"{name} LoadJsonFromRobot, jsonString: ");
             RobotData robotData = JsonUtility.FromJson<RobotData>(robot.jsonString);
             Debug.Log(robotData.body);
 

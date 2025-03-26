@@ -63,17 +63,24 @@ public class RobotTextureChange : MonoBehaviour
         //}
         roomClient.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdatedMaterial);
 
+        Debug.Log($"66: {name}, isLocal: {avatar.IsLocal}, JSON Controller: {avatarJsonController.name}");
         SetMaterial(avatarJsonController.GetBodyMaterial());
     }
 
     private void Update()
     {
+        if (!avatar.IsLocal)
+        {
+            return;
+        }
+
         if (changeMat)
         {
             Debug.Log("changeMat");
             changeMat = false;
-            roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
+            //roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
 
+            Send();
             avatarJsonController.LoadJsonFromRobot();
         }
     }
@@ -81,12 +88,8 @@ public class RobotTextureChange : MonoBehaviour
     private void Send()
     {
         Debug.LogWarning("Send");
-        //var transformBytes = MemoryMarshal.AsBytes(new ReadOnlySpan<State>(state));
 
-        //var message = ReferenceCountedSceneGraphMessage.Rent(transformBytes.Length);
-        //transformBytes.CopyTo(new Span<byte>(message.bytes, message.start, message.length));
-
-        //context.Send(message);
+        //context.SendJson(new RobotData { body = Materials.GetIndex(cached) });
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
