@@ -24,7 +24,9 @@ public class RobotTextureChange : MonoBehaviour
     private NetworkContext context;
     private Transform networkSceneRoot;
     private bool changeMat = false;
-    
+
+    private RobotData robotData;
+
     private void Start()
     {
         if (!avatar)
@@ -61,10 +63,25 @@ public class RobotTextureChange : MonoBehaviour
         //        roomClient1.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdatedMaterial);
         //    }
         //}
-        roomClient.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdatedMaterial);
+        roomClient.OnPeerAdded.AddListener(RoomClient_OnPeerAdded);
 
-        Debug.Log($"66: {name}, isLocal: {avatar.IsLocal}, JSON Controller: {avatarJsonController.name}");
-        SetMaterial(avatarJsonController.GetBodyMaterial());
+        if (avatar.IsLocal)
+        {
+            Debug.Log("avatar.IsLocal");
+            string jsonString = avatarJsonController.GetJsonString();
+            robotData = JsonUtility.FromJson<RobotData>(jsonString);
+            Debug.Log($"jsonString: {jsonString}");
+
+            OnMaterialChanged.Invoke(Materials.Get(robotData.body));
+            //SetMaterial(Materials.Get(robotData.body));
+        }
+
+    }
+
+    private void RoomClient_OnPeerAdded(IPeer peer)
+    {
+        Debug.Log($"83: {name}, isLocal: {avatar.IsLocal} - RoomClient_OnPeerAdded");
+        Send();
     }
 
     private void Update()
@@ -81,7 +98,7 @@ public class RobotTextureChange : MonoBehaviour
             //roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
 
             Send();
-            avatarJsonController.LoadJsonFromRobot();
+            //avatarJsonController.LoadJsonFromRobot();
         }
     }
 
@@ -89,65 +106,23 @@ public class RobotTextureChange : MonoBehaviour
     {
         Debug.LogWarning("Send");
 
+        context.SendJson(robotData);
         //context.SendJson(new RobotData { body = Materials.GetIndex(cached) });
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
     {
+        if (avatar.IsLocal)
+        {
+            return;
+        }
+
         Debug.LogWarning($"ProcessMessage, message: {message}");
-        //MemoryMarshal.Cast<byte, State>(
-        //        new ReadOnlySpan<byte>(message.bytes, message.start, message.length))
-        //    .CopyTo(new Span<State>(state));
-        //OnStateChange();
+        robotData = message.FromJson<RobotData>();
+
+        OnMaterialChanged.Invoke(Materials.Get(robotData.body));
     }
 
-
-    void RoomClient_OnPeerUpdatedMaterial(IPeer peer)
-    {
-        if (peer != avatar.Peer)
-        {
-            // The peer who is being updated is not our peer, so we can safely
-            // ignore this event.
-            return;
-        }
-        Debug.Log($"91: {name}, peer[\"ubiq.avatar.material.uuid\"] = " + peer["ubiq.avatar.material.uuid"]);
-        SetMaterial(peer["ubiq.avatar.material.uuid"]);
-    }
-
-    public void SetMaterial(Material material)
-    {
-        SetMaterial(Materials.Get(material));
-    }
-
-    public void SetMaterial(string uuid)
-    {
-        Debug.Log($"102: this.uuid: {this.uuid}, param uuid: {uuid}");
-        if (string.IsNullOrWhiteSpace(uuid))
-        {
-            return;
-        }
-        if (this.uuid != uuid)
-        {
-            var material = Materials.Get(uuid);
-            Debug.Log($"12345material{material}");
-            this.uuid = uuid;
-            this.cached = material;
-            this.changeMat = true;
-
-            OnMaterialChanged.Invoke(material);
-           
-            //if (avatar == null)
-            //{ avatar = GetComponent<Avatar>(); }
-
-            //if (avatar.IsLocal)
-            //{
-            //    Debug.Log($"154 name {name}, roomClient:{roomClient}");
-            //    Debug.Log($"aaaaaaaaaaaaaaaaaaaaaaaaaaaa,{roomClient.Me["ubiq.avatar.material.uuid"]}");
-            //}
-
-            //ApplyMaterialToMeshes(material);
-        }
-    }
 
     // public void ApplyMaterialToMeshes(Material material)
     // {

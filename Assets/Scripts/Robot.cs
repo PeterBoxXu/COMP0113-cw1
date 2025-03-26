@@ -364,15 +364,7 @@ public class NetworkedRobot : MonoBehaviour
         }
     }
 
-    [Serializable]
-    public class RobotData
-    {
-        public int leftArm;
-        public int rightArm;
-        public int body;
-        public int leftArmWeapon;
-        public int rightArmWeapon;
-    }
+
 
     // This method now collects the robot data and syncs it across the network
     public void GetRobotData()
@@ -413,4 +405,14 @@ public class NetworkedRobot : MonoBehaviour
         RobotData data = JsonUtility.FromJson<RobotData>(jsonString);
         ApplyRobotData(data);
     }
+}
+
+[Serializable]
+public class RobotData
+{
+    public int leftArm;
+    public int rightArm;
+    public int body;
+    public int leftArmWeapon;
+    public int rightArmWeapon;
 }
