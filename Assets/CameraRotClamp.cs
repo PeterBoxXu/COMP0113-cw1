@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class CameraRotClamp : MonoBehaviour
 {
+    public float maxRot = 60f;
+    public float minRot = -60f;
+
     void Update()
     {
-
-        float xRot = transform.rotation.x;
-        Debug.Log($"xRot: {xRot}, {xRot * Mathf.Rad2Deg}");
-        xRot = Mathf.Clamp(xRot, -35 * Mathf.Deg2Rad, 35 * Mathf.Deg2Rad);
-        transform.rotation = Quaternion.Euler(xRot, transform.rotation.y, transform.rotation.z);
-
-
-        //xRot = Mathf.Clamp(xRot, )
+        float xRot = transform.eulerAngles.x;
+        if (xRot > 180)
+            xRot -= 360;
+        xRot = Mathf.Clamp(xRot, minRot, maxRot);
+        transform.rotation = Quaternion.Euler(xRot, transform.eulerAngles.y, transform.eulerAngles.z);
     }
 }
