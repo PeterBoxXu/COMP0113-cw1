@@ -48,21 +48,7 @@ public class RobotTextureChange : MonoBehaviour
         Debug.Log($"name {name}, roomClient.Me" + roomClient.Me);
         Debug.Assert(roomClient != null, "RoomClient not found in scene");
         Debug.Assert(roomClient.Me != null, "RoomClient.Me is null");
-        ////roomClient = NetworkScene.Find(this).GetComponentInChildren<RoomClient>();
-        //avatar = GetComponent<Avatar>();
-        //// if (avatar.IsLocal)
-        //// {
-        ////     SetMaterial(Materials.Get(0));
-        //// }
 
-        //foreach (var roomClient1 in FindObjectsByType<RoomClient>(FindObjectsSortMode.None))
-        //{
-        //    if (roomClient1.gameObject.name == "peer")
-        //    {
-        //        roomClient = roomClient1;
-        //        roomClient1.OnPeerUpdated.AddListener(RoomClient_OnPeerUpdatedMaterial);
-        //    }
-        //}
         roomClient.OnPeerAdded.AddListener(RoomClient_OnPeerAdded);
 
         if (avatar.IsLocal)
@@ -72,8 +58,7 @@ public class RobotTextureChange : MonoBehaviour
             robotData = JsonUtility.FromJson<RobotData>(jsonString);
             Debug.Log($"jsonString: {jsonString}");
 
-            OnMaterialChanged.Invoke(Materials.Get(robotData.body));
-            //SetMaterial(Materials.Get(robotData.body));
+            SetMaterial(robotData);
         }
 
     }
@@ -98,7 +83,6 @@ public class RobotTextureChange : MonoBehaviour
             //roomClient.Me["ubiq.avatar.material.uuid"] = this.uuid;
 
             Send();
-            //avatarJsonController.LoadJsonFromRobot();
         }
     }
 
@@ -107,7 +91,6 @@ public class RobotTextureChange : MonoBehaviour
         Debug.LogWarning("Send");
 
         context.SendJson(robotData);
-        //context.SendJson(new RobotData { body = Materials.GetIndex(cached) });
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
@@ -116,11 +99,15 @@ public class RobotTextureChange : MonoBehaviour
         {
             return;
         }
-
-        Debug.LogWarning($"ProcessMessage, message: {message}");
         robotData = message.FromJson<RobotData>();
 
+        SetMaterial(robotData);
+    }
+
+    private void SetMaterial(RobotData robotData)
+    {
         OnMaterialChanged.Invoke(Materials.Get(robotData.body));
+        // 在这里更改材质
     }
 
 
