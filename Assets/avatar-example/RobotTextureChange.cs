@@ -49,6 +49,7 @@ public class RobotTextureChange : MonoBehaviour
         Debug.Assert(roomClient != null, "RoomClient not found in scene");
         Debug.Assert(roomClient.Me != null, "RoomClient.Me is null");
 
+        roomClient.OnJoinedRoom.AddListener(RoomClient_OnPeerAdded);
         roomClient.OnPeerAdded.AddListener(RoomClient_OnPeerAdded);
 
         if (avatar.IsLocal)
