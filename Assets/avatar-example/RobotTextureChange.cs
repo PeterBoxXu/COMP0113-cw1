@@ -68,6 +68,7 @@ public class RobotTextureChange : MonoBehaviour
     {
         Debug.Log($"69: {name}, isLocal: {avatar.IsLocal} - RoomClient_OnPeerAdded");
         Send();
+    }
 
     private void RoomClient_OnPeerAdded(IPeer peer)
     {
