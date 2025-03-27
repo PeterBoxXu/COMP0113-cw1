@@ -5,24 +5,25 @@ using System.Collections.Generic;
 
 public class Pen : MonoBehaviour
 {
-    private NetworkContext context;
-    private bool owner;
-    private Transform nib;
-    private Material drawingMaterial;
-    private GameObject currentDrawing;
-    private Renderer gripColorRenderer;
+    private NetworkContext context;            // 网络上下文 (Network Context)
+    private bool owner;                        // 是否为拥有者 (Owner flag)
+    private Transform nib;                     // 笔尖 (Nib)
+    private Material drawingMaterial;          // 绘图材质 (Drawing Material)
+    private GameObject currentDrawing;         // 当前绘图对象 (Current Drawing)
+    private Renderer gripColorRenderer;        // 手柄颜色渲染器 (Grip Color Renderer)
 
-    public Color penColor = Color.white;
+    public Color penColor = Color.white;       // 笔颜色 (Pen Color)
 
-    private LineRenderer lineRenderer;
-    private MeshCollider meshCollider;
-    private List<Vector3> linePoints = new List<Vector3>();
+    private LineRenderer lineRenderer;         // 线渲染器 (Line Renderer)
+    private MeshCollider meshCollider;         // 网格碰撞器 (Mesh Collider)
+    private List<Vector3> linePoints = new List<Vector3>();  // 绘制线段点集合 (Line Points List)
 
+    // 网络消息结构 (Network Message Structure)
     private struct Message
     {
-        public Vector3 position;
-        public Quaternion rotation;
-        public bool isDrawing;
+        public Vector3 position;               // 位置 (Position)
+        public Quaternion rotation;            // 旋转 (Rotation)
+        public bool isDrawing;                 // 是否正在绘制 (Drawing State)
 
         public Message(Transform transform, bool isDrawing)
         {
@@ -50,6 +51,7 @@ public class Pen : MonoBehaviour
             }
         }
 
+        // 使用 XRGrabInteractable 组件 (Use XRGrabInteractable)
         var grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         grab.activated.AddListener(XRGrabInteractable_Activated);
         grab.deactivated.AddListener(XRGrabInteractable_Deactivated);
@@ -63,8 +65,10 @@ public class Pen : MonoBehaviour
     {
         if (owner)
         {
+            // 发送网络消息，同步笔的位置、旋转和绘制状态
             context.SendJson(new Message(transform, isDrawing: currentDrawing != null));
 
+            // 如果正在绘制，则不断更新线段 (仅拥有者更新)
             if (currentDrawing != null && lineRenderer != null)
             {
                 Vector3 currentPos = nib.position;
@@ -73,7 +77,6 @@ public class Pen : MonoBehaviour
                     linePoints.Add(currentPos);
                     lineRenderer.positionCount = linePoints.Count;
                     lineRenderer.SetPositions(linePoints.ToArray());
-
                     UpdateMeshCollider();
                 }
             }
@@ -83,9 +86,11 @@ public class Pen : MonoBehaviour
     public void ProcessMessage(ReferenceCountedSceneGraphMessage msg)
     {
         var data = msg.FromJson<Message>();
+        // 更新笔的位置和旋转 (远程同步)
         transform.position = data.position;
         transform.rotation = data.rotation;
 
+        // 根据消息控制开始或结束绘制
         if (data.isDrawing && currentDrawing == null)
         {
             BeginDrawing();
@@ -93,6 +98,19 @@ public class Pen : MonoBehaviour
         if (!data.isDrawing && currentDrawing != null)
         {
             EndDrawing();
+        }
+
+        // 非拥有者端：更新绘制轨迹 (远程端更新 LineRenderer)
+        if (data.isDrawing && currentDrawing != null && lineRenderer != null)
+        {
+            Vector3 currentPos = nib.position;
+            if (linePoints.Count == 0 || Vector3.Distance(currentPos, linePoints[linePoints.Count - 1]) > 0.01f)
+            {
+                linePoints.Add(currentPos);
+                lineRenderer.positionCount = linePoints.Count;
+                lineRenderer.SetPositions(linePoints.ToArray());
+                UpdateMeshCollider();
+            }
         }
     }
 
@@ -116,6 +134,7 @@ public class Pen : MonoBehaviour
         owner = false;
     }
 
+    // 开始绘制 (Begin Drawing)
     private void BeginDrawing()
     {
         currentDrawing = new GameObject("Drawing");
@@ -129,12 +148,13 @@ public class Pen : MonoBehaviour
         lineRenderer.useWorldSpace = true;
 
         meshCollider = currentDrawing.AddComponent<MeshCollider>();
-        meshCollider.convex = true;
+        meshCollider.convex = false;
         meshCollider.isTrigger = false;
 
         linePoints.Clear();
     }
 
+    // 结束绘制 (End Drawing)
     private void EndDrawing()
     {
         if (currentDrawing != null)
@@ -143,9 +163,11 @@ public class Pen : MonoBehaviour
             currentDrawing = null;
             lineRenderer = null;
             meshCollider = null;
+            linePoints.Clear();
         }
     }
 
+    // 更新网格碰撞器 (Update Mesh Collider)
     private void UpdateMeshCollider()
     {
         if (linePoints.Count < 2 || lineRenderer == null || meshCollider == null)
@@ -154,10 +176,12 @@ public class Pen : MonoBehaviour
         Mesh bakedMesh = new Mesh();
         lineRenderer.BakeMesh(bakedMesh, true);
 
-        meshCollider.sharedMesh = null; // 清除旧 mesh
+        // 先清除旧的 Mesh，再赋值新 Mesh
+        meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = bakedMesh;
     }
 
+    // 设置笔颜色 (Set Pen Color)
     public void SetPenColor(Color newColor)
     {
         penColor = newColor;
