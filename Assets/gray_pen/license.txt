@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gray pen.
+* source:	https://sketchfab.com/3d-models/gray-pen-4b9249893bfe45a78e80ac8588d46de2
+* author:	Sam (https://sketchfab.com/rawpuwnzl)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gray pen." (https://sketchfab.com/3d-models/gray-pen-4b9249893bfe45a78e80ac8588d46de2) by Sam (https://sketchfab.com/rawpuwnzl) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
