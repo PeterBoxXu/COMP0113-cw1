@@ -7,8 +7,6 @@ using Ubiq.Messaging;
 public class NetworkedRobot : MonoBehaviour
 {
     public String jsonString;
-    public Text logText;
-    public int robotCode;
     public SkinnedMeshRenderer leftArmRenderer;
     public MeshRenderer leftHandRenderer;
     public SkinnedMeshRenderer rightArmRenderer;
@@ -34,7 +32,6 @@ public class NetworkedRobot : MonoBehaviour
 
     private void Awake()
     {
-        robotCode = 0;
         robotState[0] = 0;
         robotState[1] = 0;
         robotState[2] = 0;
@@ -318,8 +315,6 @@ public class NetworkedRobot : MonoBehaviour
     
     public void ResetRobot()
     {
-        logText.text = "";
-        
         robotState[0] = 0;
         robotState[1] = 0;
         robotState[2] = 0;
@@ -380,24 +375,6 @@ public class NetworkedRobot : MonoBehaviour
         
         jsonString = JsonUtility.ToJson(data);
         Debug.Log("Robot Data in JSON: " + jsonString);
-        robotCode = robotCode + 1;
-        if (robotCode < 10)
-        {
-            logText.text = "Robot Build-Up Complete! Robot Code: 00" + robotCode;
-        }else if (robotCode < 100)
-        {
-            logText.text = "Robot Build-Up Complete! Robot Code: 0" + robotCode;
-        }
-        else
-        {
-            logText.text = "Robot Build-Up Complete! Robot Code: "+ robotCode;
-        }
-        
-    }
-    
-    public void ShowErrorUI()
-    {
-        logText.text = "Robot incomplete! Please try again.";
     }
 
     public void testApply()
