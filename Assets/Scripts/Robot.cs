@@ -382,6 +382,22 @@ public class NetworkedRobot : MonoBehaviour
         RobotData data = JsonUtility.FromJson<RobotData>(jsonString);
         ApplyRobotData(data);
     }
+
+    public void disableArms()
+    {
+        leftArm.gameObject.SetActive(false);
+        rightArm.gameObject.SetActive(false);
+        leftArmRenderer.gameObject.SetActive(false);
+        rightArmRenderer.gameObject.SetActive(false);
+    }
+
+    public void enableArms()
+    {
+        leftArm.gameObject.SetActive(true);
+        rightArm.gameObject.SetActive(true);
+        leftArmRenderer.gameObject.SetActive(true);
+        rightArmRenderer.gameObject.SetActive(true);
+    }
 }
 
 [Serializable]
