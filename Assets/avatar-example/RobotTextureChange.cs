@@ -49,7 +49,7 @@ public class RobotTextureChange : MonoBehaviour
         Debug.Assert(roomClient != null, "RoomClient not found in scene");
         Debug.Assert(roomClient.Me != null, "RoomClient.Me is null");
 
-        roomClient.OnJoinedRoom.AddListener(RoomClient_OnPeerAdded);
+        roomClient.OnJoinedRoom.AddListener(RoomClient_OnJoinedRoom);
         roomClient.OnPeerAdded.AddListener(RoomClient_OnPeerAdded);
 
         if (avatar.IsLocal)
@@ -63,6 +63,11 @@ public class RobotTextureChange : MonoBehaviour
         }
 
     }
+
+    private void RoomClient_OnJoinedRoom(IRoom room)
+    {
+        Debug.Log($"69: {name}, isLocal: {avatar.IsLocal} - RoomClient_OnPeerAdded");
+        Send();
 
     private void RoomClient_OnPeerAdded(IPeer peer)
     {
