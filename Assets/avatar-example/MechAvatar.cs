@@ -80,10 +80,18 @@ public class MechAvatar : MonoBehaviour
 
     private void UpdateLeftArmMaterial(Material material)
     {
+        if (LeftArmMeshRenderer == null)
+        {
+            return;
+        }
         LeftArmMeshRenderer.material = material;
     }
     private void UpdateRightArmMaterial(Material material)
     {
+        if (RightArmMeshRenderer == null)
+        {
+            return;
+        }
         RightArmMeshRenderer.material = material;
     }
     private void HeadAndHandsEvents_OnHeadUpdate(InputVar<Pose> pose)
