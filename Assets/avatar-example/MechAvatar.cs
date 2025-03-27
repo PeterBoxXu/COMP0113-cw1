@@ -16,6 +16,8 @@ public class MechAvatar : MonoBehaviour
     public Transform leftHand;
     public Transform rightHand;
     public SkinnedMeshRenderer skinnedMeshRenderer;
+    public MeshRenderer LeftArmMeshRenderer;
+     public MeshRenderer RightArmMeshRenderer;
 
     public Renderer headRenderer;
 
@@ -52,9 +54,14 @@ public class MechAvatar : MonoBehaviour
             headAndHandsAvatar.OnRightHandUpdate.AddListener(HeadAndHandsEvents_OnRightHandUpdate);
         }
         robotChange = GetComponentInParent<RobotTextureChange>();
-        robotChange.OnMaterialChanged.AddListener(robotMaterialChange);
+        //robotChange.OnMaterialChanged.AddListener(robotMaterialChange);
+        // 身体材质更新事件
+        robotChange.OnBodyMaterialChanged.AddListener(UpdateBodyMaterial);
+        // 左手臂材质更新事件
+        robotChange.OnLeftArmMaterialChanged.AddListener(UpdateLeftArmMaterial);
+        // 右手臂材质更新事件
+        robotChange.OnRightArmMaterialChanged.AddListener(UpdateRightArmMaterial);
     }
-
     private void OnDisable()
     {
         if (headAndHandsAvatar && headAndHandsAvatar != null)
@@ -63,9 +70,22 @@ public class MechAvatar : MonoBehaviour
              headAndHandsAvatar.OnLeftHandUpdate.RemoveListener(HeadAndHandsEvents_OnLeftHandUpdate);
             headAndHandsAvatar.OnRightHandUpdate.RemoveListener(HeadAndHandsEvents_OnRightHandUpdate);
         }
-        robotChange.OnMaterialChanged.RemoveListener(robotMaterialChange);
+        //robotChange.OnMaterialChanged.RemoveListener(robotMaterialChange);
+        robotChange.OnBodyMaterialChanged.RemoveListener(UpdateBodyMaterial);
+        
+        robotChange.OnLeftArmMaterialChanged.RemoveListener(UpdateLeftArmMaterial);
+        
+        robotChange.OnRightArmMaterialChanged.RemoveListener(UpdateRightArmMaterial);
     }
 
+    private void UpdateLeftArmMaterial(Material material)
+    {
+        LeftArmMeshRenderer.material = material;
+    }
+    private void UpdateRightArmMaterial(Material material)
+    {
+        RightArmMeshRenderer.material = material;
+    }
     private void HeadAndHandsEvents_OnHeadUpdate(InputVar<Pose> pose)
     {
         if (!pose.valid)
@@ -118,7 +138,7 @@ public class MechAvatar : MonoBehaviour
         rightHand.rotation = pose.value.rotation;
     }
 
-   private void robotMaterialChange(Material material)
+   private void UpdateBodyMaterial(Material material)
     {
         skinnedMeshRenderer.material = material;
     }

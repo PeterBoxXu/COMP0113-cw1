@@ -14,7 +14,10 @@ public class RobotTextureChange : MonoBehaviour
 
     [Serializable]
     public class MaterialEvent : UnityEvent<Material> { }
-    public MaterialEvent OnMaterialChanged;
+    //public MaterialEvent OnMaterialChanged;
+    public UnityEvent<Material> OnBodyMaterialChanged;
+    public UnityEvent<Material> OnLeftArmMaterialChanged;
+    public UnityEvent<Material> OnRightArmMaterialChanged;
 
     private Avatar avatar;
     private string uuid;
@@ -113,8 +116,12 @@ public class RobotTextureChange : MonoBehaviour
 
     private void SetMaterial(RobotData robotData)
     {
-        OnMaterialChanged.Invoke(Materials.Get(robotData.body));
+        //OnMaterialChanged.Invoke(Materials.Get(robotData.body));
         // 在这里更改材质
+        OnBodyMaterialChanged.Invoke(Materials.Get(robotData.body));
+        OnLeftArmMaterialChanged.Invoke(Materials.Get(robotData.leftArm));
+        OnRightArmMaterialChanged.Invoke(Materials.Get(robotData.rightArm));
+
     }
 
 

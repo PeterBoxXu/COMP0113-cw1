@@ -54,6 +54,8 @@ MonoBehaviour:
   leftHand: {fileID: 1670691965516823129}
   rightHand: {fileID: 2449942412599080710}
   skinnedMeshRenderer: {fileID: 6082539532970951938}
+  LeftArmMeshRenderer: {fileID: 6755411477016654462}
+  RightArmMeshRenderer: {fileID: 189696507092810943}
   headRenderer: {fileID: 0}
   leftHandRenderer: {fileID: 7334439582218619413}
   rightHandRenderer: {fileID: 8872847408095800358}
@@ -147,7 +149,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Materials: {fileID: 11400000, guid: 929d992665e6e4aea95cc7f6a84b7490, type: 2}
-  OnMaterialChanged:
+  OnBodyMaterialChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLeftArmMaterialChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRightArmMaterialChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &3699543988290275062
@@ -214,7 +222,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f719d2d9437be4a47b61e1ac9d2354da, type: 2}
+  - {fileID: 2100000, guid: 2d306e2f40d5872469a1ebc3e86e2cea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -300,7 +308,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f719d2d9437be4a47b61e1ac9d2354da, type: 2}
+  - {fileID: 2100000, guid: 2d306e2f40d5872469a1ebc3e86e2cea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -658,9 +666,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 137794024807100558, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+      propertyPath: m_AABB.m_Center.z
+      value: 7.478253
+      objectReference: {fileID: 0}
+    - target: {fileID: 137794024807100558, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+      propertyPath: m_AABB.m_Extent.z
+      value: 7.978416
+      objectReference: {fileID: 0}
+    - target: {fileID: 137794024807100558, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: f719d2d9437be4a47b61e1ac9d2354da, type: 2}
+      objectReference: {fileID: 2100000, guid: 2d306e2f40d5872469a1ebc3e86e2cea, type: 2}
     - target: {fileID: 4384927295999416829, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
       propertyPath: m_Enabled
       value: 0

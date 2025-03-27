@@ -9,10 +9,10 @@ namespace Ubiq.Samples.Social
     {
         public AvatarManager avatarManager;
         public NetworkedRobot robot;
-        public RobotMaterial catalogue;
-        public GameObject newAvatarPrefab;
+        //public RobotMaterial catalogue;
+       // public GameObject newAvatarPrefab;
         private NetworkScene networkScene;
-        private RoomClient roomclient;
+       // private RoomClient roomclient;
 
         private void Start()
         {
