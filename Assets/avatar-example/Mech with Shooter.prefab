@@ -71,6 +71,7 @@ GameObject:
   - component: {fileID: 2075108970}
   - component: {fileID: 4093855498690803947}
   - component: {fileID: 5383426270922999390}
+  - component: {fileID: 7111130295211026708}
   m_Layer: 0
   m_Name: Mech with Shooter
   m_TagString: Untagged
@@ -159,6 +160,21 @@ MonoBehaviour:
   OnRightArmMaterialChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7111130295211026708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3172939939781028348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd275ca98abcbb46b1d3b0cfb045d99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 7353714879870280125, guid: 17c7b8119c5c18c4198c6999bf2dc6b8, type: 3}
+  speed: 5
+  nozzle: {fileID: 6018912576690131492}
 --- !u!1 &3699543988290275062
 GameObject:
   m_ObjectHideFlags: 0
@@ -758,9 +774,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8156165898282436462, guid: 58180c7c680edab4b949ae025061ba74, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2367881565878362649}
-    - targetCorrespondingSourceObject: {fileID: 8156165898282436462, guid: 58180c7c680edab4b949ae025061ba74, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6786079811665864424}
   m_SourcePrefab: {fileID: 100100000, guid: 58180c7c680edab4b949ae025061ba74, type: 3}
 --- !u!1 &4613968598342593001 stripped
 GameObject:
@@ -797,21 +810,7 @@ MonoBehaviour:
     m_intermittent: 0
     m_intervalTime: 2
     m_initialTimingPhase: 0
---- !u!114 &6786079811665864424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4613968598342593001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bd275ca98abcbb46b1d3b0cfb045d99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 7353714879870280125, guid: 17c7b8119c5c18c4198c6999bf2dc6b8, type: 3}
-  speed: 5
-  nozzle: {fileID: 6018912576690131492}
+  m_isGunHeldInRightHand: 1
 --- !u!4 &6046205216812243730 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7120456856974587285, guid: 58180c7c680edab4b949ae025061ba74, type: 3}
