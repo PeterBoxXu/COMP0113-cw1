@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using Ubiq.Messaging;
+using System.Collections.Generic;
 
 public class Pen : MonoBehaviour
 {
@@ -9,24 +10,25 @@ public class Pen : MonoBehaviour
     private Transform nib;
     private Material drawingMaterial;
     private GameObject currentDrawing;
-    // 新增：用于存储 Grip 下 color 物体的 Renderer (Renderer for Grip/color object)
     private Renderer gripColorRenderer;
 
-    // 公开属性，用于设置笔的颜色 (public property for pen color)
     public Color penColor = Color.white;
 
-    // 1. Amend message to also store current drawing state
+    private LineRenderer lineRenderer;
+    private MeshCollider meshCollider;
+    private List<Vector3> linePoints = new List<Vector3>();
+
     private struct Message
     {
         public Vector3 position;
         public Quaternion rotation;
-        public bool isDrawing; // new
+        public bool isDrawing;
 
-        public Message(Transform transform, bool isDrawing) // new
+        public Message(Transform transform, bool isDrawing)
         {
             this.position = transform.position;
             this.rotation = transform.rotation;
-            this.isDrawing = isDrawing; // new
+            this.isDrawing = isDrawing;
         }
     }
 
@@ -36,9 +38,8 @@ public class Pen : MonoBehaviour
 
         var shader = Shader.Find("Sprites/Default");
         drawingMaterial = new Material(shader);
-        drawingMaterial.color = penColor; // 设置材质颜色 (set material color)
+        drawingMaterial.color = penColor;
 
-        // 获取 Grip 下的 color 物体的 Renderer (get renderer of "color" under "Grip")
         Transform colorTransform = transform.Find("Grip/color");
         if (colorTransform != null)
         {
@@ -52,7 +53,6 @@ public class Pen : MonoBehaviour
         var grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         grab.activated.AddListener(XRGrabInteractable_Activated);
         grab.deactivated.AddListener(XRGrabInteractable_Deactivated);
-
         grab.selectEntered.AddListener(XRGrabInteractable_SelectEntered);
         grab.selectExited.AddListener(XRGrabInteractable_SelectExited);
 
@@ -63,9 +63,20 @@ public class Pen : MonoBehaviour
     {
         if (owner)
         {
-            // new
-            // 2. Send current drawing state if owner
-            context.SendJson(new Message(transform, isDrawing: currentDrawing));
+            context.SendJson(new Message(transform, isDrawing: currentDrawing != null));
+
+            if (currentDrawing != null && lineRenderer != null)
+            {
+                Vector3 currentPos = nib.position;
+                if (linePoints.Count == 0 || Vector3.Distance(currentPos, linePoints[linePoints.Count - 1]) > 0.01f)
+                {
+                    linePoints.Add(currentPos);
+                    lineRenderer.positionCount = linePoints.Count;
+                    lineRenderer.SetPositions(linePoints.ToArray());
+
+                    UpdateMeshCollider();
+                }
+            }
         }
     }
 
@@ -75,13 +86,11 @@ public class Pen : MonoBehaviour
         transform.position = data.position;
         transform.rotation = data.rotation;
 
-        // new
-        // 3. Start drawing locally when a remote user starts
-        if (data.isDrawing && !currentDrawing)
+        if (data.isDrawing && currentDrawing == null)
         {
             BeginDrawing();
         }
-        if (!data.isDrawing && currentDrawing)
+        if (!data.isDrawing && currentDrawing != null)
         {
             EndDrawing();
         }
@@ -110,26 +119,45 @@ public class Pen : MonoBehaviour
     private void BeginDrawing()
     {
         currentDrawing = new GameObject("Drawing");
-        var trail = currentDrawing.AddComponent<TrailRenderer>();
-        trail.time = Mathf.Infinity;
-        trail.material = drawingMaterial;
-        trail.startWidth = .05f;
-        trail.endWidth = .05f;
-        trail.minVertexDistance = .02f;
 
-        currentDrawing.transform.parent = nib.transform;
-        currentDrawing.transform.localPosition = Vector3.zero;
-        currentDrawing.transform.localRotation = Quaternion.identity;
+        lineRenderer = currentDrawing.AddComponent<LineRenderer>();
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.material.color = penColor;
+        lineRenderer.startWidth = 0.05f;
+        lineRenderer.endWidth = 0.05f;
+        lineRenderer.positionCount = 0;
+        lineRenderer.useWorldSpace = true;
+
+        meshCollider = currentDrawing.AddComponent<MeshCollider>();
+        meshCollider.convex = true;
+        meshCollider.isTrigger = false;
+
+        linePoints.Clear();
     }
 
     private void EndDrawing()
     {
-        currentDrawing.transform.parent = null;
-        currentDrawing.GetComponent<TrailRenderer>().emitting = false;
-        currentDrawing = null;
+        if (currentDrawing != null)
+        {
+            UpdateMeshCollider(); // 最后更新一次碰撞体
+            currentDrawing = null;
+            lineRenderer = null;
+            meshCollider = null;
+        }
     }
 
-    // 新增方法：设置笔颜色，同时改变 Grip 下 color 物体的颜色 (new method: set pen color and update the color object under Grip)
+    private void UpdateMeshCollider()
+    {
+        if (linePoints.Count < 2 || lineRenderer == null || meshCollider == null)
+            return;
+
+        Mesh bakedMesh = new Mesh();
+        lineRenderer.BakeMesh(bakedMesh, true);
+
+        meshCollider.sharedMesh = null; // 清除旧 mesh
+        meshCollider.sharedMesh = bakedMesh;
+    }
+
     public void SetPenColor(Color newColor)
     {
         penColor = newColor;
