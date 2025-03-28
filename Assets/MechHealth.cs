@@ -7,7 +7,7 @@ using Avatar = Ubiq.Avatars.Avatar;
 public class MechHealth : MonoBehaviour
 {
     NetworkContext context;
-    Avatar avatar;
+    public Avatar avatar;
     public int health { get; private set; }
     public int maxHealth = 10;
 
@@ -17,6 +17,10 @@ public class MechHealth : MonoBehaviour
         avatar = GetComponentInParent<Avatar>();
         Debug.Log($"14: Health Start, id: {context.Id}, roomClient: {context.Scene.GetComponentInChildren<RoomClient>()}");
         health = maxHealth;
+
+        RoomClient roomClient = context.Scene.GetComponentInChildren<RoomClient>();
+        roomClient.OnJoinedRoom.AddListener(RoomClient_OnJoinedRoom);
+        roomClient.OnPeerAdded.AddListener(RoomClient_OnPeerAdded);
     }
 
     private struct HealthMessage
@@ -25,8 +29,33 @@ public class MechHealth : MonoBehaviour
         public int health;
     }
 
+    private void RoomClient_OnJoinedRoom(IRoom room)
+    {
+        Debug.Log("Health RoomClient_OnJoinedRoom");
+        Send();
+    }
+
+    private void RoomClient_OnPeerAdded(Avatar peer)
+    {
+        Debug.Log("Health RoomClient_OnPeerAdded");
+        Send();
+    }
+
+    private void Send()
+    {
+        if (avatar.IsLocal)
+        {
+            context.SendJson(new HealthMessage()
+            {
+                fromLocal = true,
+                health = health
+            });
+        }
+    }
+
     public void TakeDamage(int damage)
     {
+        Debug.Log($"Health {avatar.name} TakeDamage");
         if (!avatar.IsLocal)
         {
             context.SendJson(new HealthMessage()
@@ -46,6 +75,8 @@ public class MechHealth : MonoBehaviour
         }
 
         HealthMessage healthMessage = message.FromJson<HealthMessage>();
+        Debug.Log($"Health {avatar.name} ProcessMessage");
+
         if (!avatar.IsLocal && !healthMessage.fromLocal)
         {
             return;
@@ -53,6 +84,7 @@ public class MechHealth : MonoBehaviour
         
         if (avatar.IsLocal && !healthMessage.fromLocal)
         {
+            Debug.Log("Health is local and message not from local");
             if (health < healthMessage.health)
             {
                 context.SendJson(new HealthMessage()
