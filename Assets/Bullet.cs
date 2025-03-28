@@ -2,6 +2,7 @@ using UnityEngine;
 using Ubiq.Messaging;
 using Ubiq.Spawning;
 using Ubiq.Rooms;
+using Avatar = Ubiq.Avatars.Avatar;
 
 public enum Team : int
 {
@@ -49,7 +50,7 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
 
         if (timeLeft <= 0)
         {
-            Destroy(gameObject);
+            NetworkSpawnManager.Find(this).Despawn(gameObject);
         }
     }
 
@@ -59,6 +60,7 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
         public Vector3 rotation;
         public Team shooterTeam;
         public float timeLeft;
+        public bool canDestroy;
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
@@ -73,5 +75,22 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
         // Make sure the logic in Update doesn't trigger as a result of this message
         lastPosition = transform.localPosition;
         timeLeft = m.timeLeft;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!owner)
+        {
+            return;
+        }
+
+        if (other.CompareTag("Player"))
+        {
+            var player = other.GetComponentInParent<MechAvatar>().GetComponentInParent<Avatar>();
+
+            Debug.Log($"Bullet hit player {player.name}, {player.IsLocal}");
+
+            NetworkSpawnManager.Find(this).Despawn(gameObject);
+        }
     }
 }
