@@ -35,7 +35,7 @@ public class MechHealth : MonoBehaviour
         Send();
     }
 
-    private void RoomClient_OnPeerAdded(Avatar peer)
+    private void RoomClient_OnPeerAdded(IPeer peer)
     {
         Debug.Log("Health RoomClient_OnPeerAdded");
         Send();
