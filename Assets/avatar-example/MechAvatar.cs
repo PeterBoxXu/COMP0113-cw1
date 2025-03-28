@@ -17,7 +17,18 @@ public class MechAvatar : MonoBehaviour
     public Transform rightHand;
     public SkinnedMeshRenderer skinnedMeshRenderer;
     public MeshRenderer LeftArmMeshRenderer;
-     public MeshRenderer RightArmMeshRenderer;
+    public MeshRenderer RightArmMeshRenderer;
+    public MeshRenderer LeftHand;
+    public MeshRenderer RightHand;
+    public GameObject Left_Hand;
+    public GameObject Right_Hand;
+    public GameObject LeftMissileMatrixArm;
+    public GameObject RightMissileMatrixArm;
+    public GameObject LeftMissileArm;
+    public GameObject RightMissileArm;
+    public GameObject LeftCannonArm;
+    public GameObject RightCannonArm;
+
 
     public Renderer headRenderer;
 
@@ -30,7 +41,6 @@ public class MechAvatar : MonoBehaviour
     private Avatar avatar;
     private InputVar<Pose> lastGoodHeadPose;
     private XROrigin xrOrigin;
-
     private void Start()
     {
         // avatar = GetComponentInParent<Avatar>();
@@ -55,12 +65,20 @@ public class MechAvatar : MonoBehaviour
         }
         robotChange = GetComponentInParent<RobotTextureChange>();
         //robotChange.OnMaterialChanged.AddListener(robotMaterialChange);
-        // 身体材质更新事件
+       // 身体材质更新事件
         robotChange.OnBodyMaterialChanged.AddListener(UpdateBodyMaterial);
         // 左手臂材质更新事件
         robotChange.OnLeftArmMaterialChanged.AddListener(UpdateLeftArmMaterial);
         // 右手臂材质更新事件
         robotChange.OnRightArmMaterialChanged.AddListener(UpdateRightArmMaterial);
+        // 左手材质更新事件
+        robotChange.OnLeftHandMaterialChanged.AddListener(UpdateLeftHandMaterial);
+        // 右手材质更新事件
+        robotChange.OnRightHandMaterialChanged.AddListener(UpdateRightHandMaterial);
+        //左手臂武器更新事件
+        robotChange.OnLeftArmWeaponChanged.AddListener(UpdateLeftArmWeapon);
+        //右手臂武器更新事件
+        robotChange.OnRightArmWeaponChanged.AddListener(UpdateRightArmWeapon);
     }
     private void OnDisable()
     {
@@ -76,6 +94,10 @@ public class MechAvatar : MonoBehaviour
         robotChange.OnLeftArmMaterialChanged.RemoveListener(UpdateLeftArmMaterial);
         
         robotChange.OnRightArmMaterialChanged.RemoveListener(UpdateRightArmMaterial);
+
+        robotChange.OnLeftArmWeaponChanged.RemoveListener(UpdateLeftArmWeapon);
+  
+        robotChange.OnRightArmWeaponChanged.RemoveListener(UpdateRightArmWeapon);
     }
 
     private void UpdateLeftArmMaterial(Material material)
@@ -84,7 +106,24 @@ public class MechAvatar : MonoBehaviour
         {
             return;
         }
-        LeftArmMeshRenderer.material = material;
+       LeftArmMeshRenderer.material = material;
+    }
+  private void UpdateLeftHandMaterial(Material material)
+    {
+        if (LeftHand == null)
+        {
+            return;
+        }
+        LeftHand.material = material;
+    }
+
+    private void UpdateRightHandMaterial(Material material)
+    {
+        if (RightHand == null)
+        {
+            return;
+        }
+        RightHand.material = material;
     }
     private void UpdateRightArmMaterial(Material material)
     {
@@ -93,6 +132,34 @@ public class MechAvatar : MonoBehaviour
             return;
         }
         RightArmMeshRenderer.material = material;
+    }
+    private void UpdateLeftArmWeapon(int weapon){
+        if(weapon == 0){
+            LeftMissileArm.SetActive(true);
+        }
+        else if (weapon == 1){
+            LeftCannonArm.SetActive(true);
+        }
+        else  if (weapon == 2){
+            LeftMissileMatrixArm.SetActive(true);
+        }
+        else if(weapon == 3){
+            Left_Hand.SetActive(true);
+        }
+    }
+    private void UpdateRightArmWeapon(int weapon){
+        if(weapon == 0){
+            RightMissileArm.SetActive(true);
+        }
+        else if (weapon == 1){
+            RightCannonArm.SetActive(true);
+        }
+        else  if (weapon == 2){
+            RightMissileMatrixArm.SetActive(true);
+        }
+        else if(weapon == 4){
+            Right_Hand.SetActive(true);
+        }
     }
     private void HeadAndHandsEvents_OnHeadUpdate(InputVar<Pose> pose)
     {

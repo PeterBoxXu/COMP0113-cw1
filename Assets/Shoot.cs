@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Ubiq.Spawning;
 using UnityEngine;
-using Avatar = Ubiq.Avatars.Avatar;
 //using UnityEngine.InputSystem;
 using UnityEngine.XR;
 
@@ -11,20 +10,13 @@ public class Shoot : MonoBehaviour
     public float speed = 5f;
     public Transform nozzle;
     private NetworkSpawnManager spawnManager;
-    private Avatar avatar;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        avatar = GetComponentInChildren<Avatar>();
         spawnManager = NetworkSpawnManager.Find(this);
     }
     void Update()
     {
-        if (!avatar.IsLocal)
-        {
-            return;
-        }
-
         if (CheckAction())
         {
             TriggerFunction();

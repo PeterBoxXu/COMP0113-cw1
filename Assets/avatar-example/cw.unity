@@ -8806,7 +8806,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 0.92856145, g: 1, b: 0, a: 1}
 --- !u!114 &322940051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9578,7 +9577,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 0.065148115, g: 1, b: 0, a: 1}
 --- !u!114 &336719370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16728,7 +16726,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 1, g: 0.6565721, b: 0, a: 1}
 --- !u!114 &551054445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26996,7 +26993,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 0, g: 0.16368222, b: 1, a: 1}
 --- !u!114 &937842909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27332,7 +27328,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 1, g: 0, b: 0.91168547, a: 1}
 --- !u!114 &941813534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31634,7 +31629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatarManager: {fileID: 1504386661}
-  newAvatarPrefab: {fileID: 3172939939781028348, guid: 78923e740b39f48f2b576a4de718cf6b, type: 3}
+  newAvatarPrefab: {fileID: 3172939939781028348, guid: 6c24c0a4ef66c42d6b7018153125df4b, type: 3}
 --- !u!1 &1108208951 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4921675115321883647, guid: e2fdcaac11701fe438724a8a8b3a76c5, type: 3}
@@ -42235,7 +42230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &1526223619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52441,7 +52435,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493554e0648768645a614400a3075e9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penColor: {r: 0, g: 1, b: 0.89454937, a: 1}
 --- !u!114 &1940508415
 MonoBehaviour:
   m_ObjectHideFlags: 0

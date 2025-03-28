@@ -40,7 +40,6 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
                 context.SendJson(new Message()
                 {
                     position = transform.localPosition,
-                    rotation = transform.localRotation.eulerAngles,
                     timeLeft = timeLeft,
                 });
             }
@@ -56,7 +55,6 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
     private struct Message
     {
         public Vector3 position;
-        public Vector3 rotation;
         public Team shooterTeam;
         public float timeLeft;
     }
@@ -68,7 +66,6 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
 
         // Use the message to update the Component
         transform.localPosition = m.position;
-        transform.localRotation = Quaternion.Euler(m.rotation);
 
         // Make sure the logic in Update doesn't trigger as a result of this message
         lastPosition = transform.localPosition;

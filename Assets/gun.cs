@@ -46,6 +46,7 @@ public class Gun : MonoBehaviour
         var data = msg.FromJson<SyncMessage>();
         Debug.Log("3333333333333333");
         transform.position = data.position;
+        transform.rotation = data.rotation;
     }
 
       private void XRGrabInteractable_SelectEntered(SelectEnterEventArgs arg0)

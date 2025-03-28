@@ -18,6 +18,10 @@ public class RobotTextureChange : MonoBehaviour
     public UnityEvent<Material> OnBodyMaterialChanged;
     public UnityEvent<Material> OnLeftArmMaterialChanged;
     public UnityEvent<Material> OnRightArmMaterialChanged;
+    public UnityEvent<Material> OnLeftHandMaterialChanged;
+    public UnityEvent<Material> OnRightHandMaterialChanged;
+    public UnityEvent<int> OnLeftArmWeaponChanged;
+    public UnityEvent<int> OnRightArmWeaponChanged;
 
     private Avatar avatar;
     private string uuid;
@@ -121,6 +125,14 @@ public class RobotTextureChange : MonoBehaviour
         OnBodyMaterialChanged.Invoke(Materials.Get(robotData.body));
         OnLeftArmMaterialChanged.Invoke(Materials.Get(robotData.leftArm));
         OnRightArmMaterialChanged.Invoke(Materials.Get(robotData.rightArm));
+ 
+        OnLeftArmWeaponChanged.Invoke(robotData.leftArmWeapon);
+        OnRightArmWeaponChanged.Invoke(robotData.rightArmWeapon);
+        //先加载手，再改变材质
+        if(robotData.leftArmWeapon == 3)
+            OnLeftHandMaterialChanged.Invoke(Materials.Get(robotData.leftArm));
+        if(robotData.leftArmWeapon == 4)
+            OnRightHandMaterialChanged.Invoke(Materials.Get(robotData.rightArm));
 
     }
 
