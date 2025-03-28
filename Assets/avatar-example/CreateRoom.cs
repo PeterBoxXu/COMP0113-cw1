@@ -19,7 +19,7 @@ public class CreateRoom : MonoBehaviour
             //blueRoomId = Guid.NewGuid();
             blueRoomId = Guid.Parse("3e0ec519-a7b5-4f0c-bd82-bc980d5cf371");
             //gameRoomId = Guid.NewGuid();
-            gameRoomId = Guid.Parse("4ae8f004-176a-4f01-888e-9b9c078fee50");
+            gameRoomId = Guid.Parse("4ae8f004-176a-4f01-888e-9b9c078fee59");
         }
        Debug.Log($"Lobby ID: {lobbyId}, Red Room ID: {redRoomId}, Blue Room ID: {blueRoomId}, Game Room ID: {gameRoomId}");
     }
