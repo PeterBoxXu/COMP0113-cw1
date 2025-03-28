@@ -142,8 +142,8 @@ namespace Lightbug.LaserMachine                             // 定义命名空�
                             // 只有当枪握在右手时才检测输入 (Only check input if gun is held in right hand)
                             if (m_isGunHeldInRightHand)
                             {
-                                if (Input.GetKey(KeyCode.X))
-                                    showSparks = true;
+                                //if (Input.GetKey(KeyCode.X))
+                                //    showSparks = true;
 
                                 List<InputDevice> devices = new List<InputDevice>();
                                 InputDevices.GetDevicesAtXRNode(XRNode.RightHand, devices);
