@@ -9,15 +9,25 @@ using Avatar = Ubiq.Avatars.Avatar;
 /// </summary>
 public class MechAvatar : MonoBehaviour
 {
+    public bool withHands;
     public Animator animator;
     public Transform head;
     public Transform torsoBase;
     public Transform torso;
     public Transform leftHand;
     public Transform rightHand;
+
     public SkinnedMeshRenderer skinnedMeshRenderer;
     public MeshRenderer LeftArmMeshRenderer;
-     public MeshRenderer RightArmMeshRenderer;
+    public MeshRenderer RightArmMeshRenderer;
+    public MeshRenderer LeftHand;
+    public MeshRenderer RightHand;
+    public GameObject LeftMissileMatrixArm;
+    public GameObject RightMissileMatrixArm;
+    public GameObject LeftMissileArm;
+    public GameObject RightMissileArm;
+    public GameObject LeftCannonArm;
+    public GameObject RightCannonArm;
 
     public Renderer headRenderer;
 
@@ -61,6 +71,10 @@ public class MechAvatar : MonoBehaviour
         robotChange.OnLeftArmMaterialChanged.AddListener(UpdateLeftArmMaterial);
         // 右手臂材质更新事件
         robotChange.OnRightArmMaterialChanged.AddListener(UpdateRightArmMaterial);
+        //左手臂武器更新事件
+        robotChange.OnLeftArmWeaponChanged.AddListener(UpdateLeftArmWeapon);
+        //右手臂武器更新事件
+        robotChange.OnRightArmWeaponChanged.AddListener(UpdateRightArmWeapon);
     }
     private void OnDisable()
     {
@@ -76,24 +90,64 @@ public class MechAvatar : MonoBehaviour
         robotChange.OnLeftArmMaterialChanged.RemoveListener(UpdateLeftArmMaterial);
         
         robotChange.OnRightArmMaterialChanged.RemoveListener(UpdateRightArmMaterial);
-    }
 
+        robotChange.OnLeftArmWeaponChanged.RemoveListener(UpdateLeftArmWeapon);
+  
+        robotChange.OnRightArmWeaponChanged.RemoveListener(UpdateRightArmWeapon);
+    }
     private void UpdateLeftArmMaterial(Material material)
     {
-        if (LeftArmMeshRenderer == null)
+        if (LeftHand == null)
         {
             return;
         }
-        LeftArmMeshRenderer.material = material;
+        LeftHand.material = material;
     }
     private void UpdateRightArmMaterial(Material material)
     {
-        if (RightArmMeshRenderer == null)
+        if (RightHand == null)
         {
             return;
         }
-        RightArmMeshRenderer.material = material;
+        RightHand.material = material;
     }
+    private void UpdateLeftArmWeapon(int weapon){
+        if (withHands)
+        {
+            return;
+        }
+        if (weapon == 0){
+            LeftMissileArm.SetActive(true);
+        }
+        else if (weapon == 1){
+            LeftCannonArm.SetActive(true);
+        }
+        else  if (weapon == 2){
+            LeftMissileMatrixArm.SetActive(true);
+        }
+        else if(weapon == 3){
+            LeftHand.enabled = true;
+        }
+    }
+    private void UpdateRightArmWeapon(int weapon){
+        if (withHands)
+        {
+            return;
+        }
+        if (weapon == 0){
+            RightMissileArm.SetActive(true);
+        }
+        else if (weapon == 1){
+            RightCannonArm.SetActive(true);
+        }
+        else  if (weapon == 2){
+            RightMissileMatrixArm.SetActive(true);
+        }
+        else if(weapon == 3){
+            RightHand.enabled = true;
+        }
+    }
+  
     private void HeadAndHandsEvents_OnHeadUpdate(InputVar<Pose> pose)
     {
         if (!pose.valid)
@@ -115,13 +169,20 @@ public class MechAvatar : MonoBehaviour
         }
         else
         {
-            animator.SetBool("walking", true);
+            // Check if new pose is different enough to be considered walking
+            if (Vector3.Distance(lastGoodHeadPose.value.position, pose.value.position) > 0.1f)
+                animator.SetBool("walking", true);
         }
         lastGoodHeadPose = pose;
     }
 
     private void HeadAndHandsEvents_OnLeftHandUpdate(InputVar<Pose> pose)
     {
+        if (!withHands)
+        {
+            return;
+        }
+
         if (!pose.valid)
         {
             leftHandRenderer.enabled = false;
@@ -135,6 +196,11 @@ public class MechAvatar : MonoBehaviour
 
     private void HeadAndHandsEvents_OnRightHandUpdate(InputVar<Pose> pose)
     {
+        if (!withHands)
+        {
+            return;
+        }
+
         if (!pose.valid)
         {
             rightHandRenderer.enabled = false;

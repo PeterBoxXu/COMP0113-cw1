@@ -18,6 +18,8 @@ public class RobotTextureChange : MonoBehaviour
     public UnityEvent<Material> OnBodyMaterialChanged;
     public UnityEvent<Material> OnLeftArmMaterialChanged;
     public UnityEvent<Material> OnRightArmMaterialChanged;
+    public UnityEvent<int> OnLeftArmWeaponChanged;
+    public UnityEvent<int> OnRightArmWeaponChanged;
 
     private Avatar avatar;
     private string uuid;
@@ -121,6 +123,8 @@ public class RobotTextureChange : MonoBehaviour
         OnBodyMaterialChanged.Invoke(Materials.Get(robotData.body));
         OnLeftArmMaterialChanged.Invoke(Materials.Get(robotData.leftArm));
         OnRightArmMaterialChanged.Invoke(Materials.Get(robotData.rightArm));
+        OnLeftArmWeaponChanged.Invoke(robotData.leftArmWeapon);
+        OnRightArmWeaponChanged.Invoke(robotData.rightArmWeapon);
 
     }
 
