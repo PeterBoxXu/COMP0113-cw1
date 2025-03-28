@@ -9,26 +9,25 @@ using Avatar = Ubiq.Avatars.Avatar;
 /// </summary>
 public class MechAvatar : MonoBehaviour
 {
+    public bool withHands;
     public Animator animator;
     public Transform head;
     public Transform torsoBase;
     public Transform torso;
     public Transform leftHand;
     public Transform rightHand;
+
     public SkinnedMeshRenderer skinnedMeshRenderer;
     public MeshRenderer LeftArmMeshRenderer;
     public MeshRenderer RightArmMeshRenderer;
     public MeshRenderer LeftHand;
     public MeshRenderer RightHand;
-    public GameObject Left_Hand;
-    public GameObject Right_Hand;
     public GameObject LeftMissileMatrixArm;
     public GameObject RightMissileMatrixArm;
     public GameObject LeftMissileArm;
     public GameObject RightMissileArm;
     public GameObject LeftCannonArm;
     public GameObject RightCannonArm;
-
 
     public Renderer headRenderer;
 
@@ -41,6 +40,7 @@ public class MechAvatar : MonoBehaviour
     private Avatar avatar;
     private InputVar<Pose> lastGoodHeadPose;
     private XROrigin xrOrigin;
+
     private void Start()
     {
         // avatar = GetComponentInParent<Avatar>();
@@ -65,16 +65,12 @@ public class MechAvatar : MonoBehaviour
         }
         robotChange = GetComponentInParent<RobotTextureChange>();
         //robotChange.OnMaterialChanged.AddListener(robotMaterialChange);
-       // 身体材质更新事件
+        // 身体材质更新事件
         robotChange.OnBodyMaterialChanged.AddListener(UpdateBodyMaterial);
         // 左手臂材质更新事件
         robotChange.OnLeftArmMaterialChanged.AddListener(UpdateLeftArmMaterial);
         // 右手臂材质更新事件
         robotChange.OnRightArmMaterialChanged.AddListener(UpdateRightArmMaterial);
-        // 左手材质更新事件
-        robotChange.OnLeftHandMaterialChanged.AddListener(UpdateLeftHandMaterial);
-        // 右手材质更新事件
-        robotChange.OnRightHandMaterialChanged.AddListener(UpdateRightHandMaterial);
         //左手臂武器更新事件
         robotChange.OnLeftArmWeaponChanged.AddListener(UpdateLeftArmWeapon);
         //右手臂武器更新事件
@@ -99,16 +95,7 @@ public class MechAvatar : MonoBehaviour
   
         robotChange.OnRightArmWeaponChanged.RemoveListener(UpdateRightArmWeapon);
     }
-
     private void UpdateLeftArmMaterial(Material material)
-    {
-        if (LeftArmMeshRenderer == null)
-        {
-            return;
-        }
-       LeftArmMeshRenderer.material = material;
-    }
-  private void UpdateLeftHandMaterial(Material material)
     {
         if (LeftHand == null)
         {
@@ -116,8 +103,7 @@ public class MechAvatar : MonoBehaviour
         }
         LeftHand.material = material;
     }
-
-    private void UpdateRightHandMaterial(Material material)
+    private void UpdateRightArmMaterial(Material material)
     {
         if (RightHand == null)
         {
@@ -125,16 +111,12 @@ public class MechAvatar : MonoBehaviour
         }
         RightHand.material = material;
     }
-    private void UpdateRightArmMaterial(Material material)
-    {
-        if (RightArmMeshRenderer == null)
+    private void UpdateLeftArmWeapon(int weapon){
+        if (withHands)
         {
             return;
         }
-        RightArmMeshRenderer.material = material;
-    }
-    private void UpdateLeftArmWeapon(int weapon){
-        if(weapon == 0){
+        if (weapon == 0){
             LeftMissileArm.SetActive(true);
         }
         else if (weapon == 1){
@@ -144,11 +126,15 @@ public class MechAvatar : MonoBehaviour
             LeftMissileMatrixArm.SetActive(true);
         }
         else if(weapon == 3){
-            Left_Hand.SetActive(true);
+            LeftHand.enabled = true;
         }
     }
     private void UpdateRightArmWeapon(int weapon){
-        if(weapon == 0){
+        if (withHands)
+        {
+            return;
+        }
+        if (weapon == 0){
             RightMissileArm.SetActive(true);
         }
         else if (weapon == 1){
@@ -157,10 +143,11 @@ public class MechAvatar : MonoBehaviour
         else  if (weapon == 2){
             RightMissileMatrixArm.SetActive(true);
         }
-        else if(weapon == 4){
-            Right_Hand.SetActive(true);
+        else if(weapon == 3){
+            RightHand.enabled = true;
         }
     }
+  
     private void HeadAndHandsEvents_OnHeadUpdate(InputVar<Pose> pose)
     {
         if (!pose.valid)
@@ -182,13 +169,20 @@ public class MechAvatar : MonoBehaviour
         }
         else
         {
-            animator.SetBool("walking", true);
+            // Check if new pose is different enough to be considered walking
+            if (Vector3.Distance(lastGoodHeadPose.value.position, pose.value.position) > 0.1f)
+                animator.SetBool("walking", true);
         }
         lastGoodHeadPose = pose;
     }
 
     private void HeadAndHandsEvents_OnLeftHandUpdate(InputVar<Pose> pose)
     {
+        if (!withHands)
+        {
+            return;
+        }
+
         if (!pose.valid)
         {
             leftHandRenderer.enabled = false;
@@ -202,6 +196,11 @@ public class MechAvatar : MonoBehaviour
 
     private void HeadAndHandsEvents_OnRightHandUpdate(InputVar<Pose> pose)
     {
+        if (!withHands)
+        {
+            return;
+        }
+
         if (!pose.valid)
         {
             rightHandRenderer.enabled = false;

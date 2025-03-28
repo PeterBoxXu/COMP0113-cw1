@@ -58,6 +58,7 @@ public class MechHealth : MonoBehaviour
         Debug.Log($"Health {avatar.name} TakeDamage");
         if (!avatar.IsLocal)
         {
+            Debug.Log("Health is not local");
             context.SendJson(new HealthMessage()
             {
                 fromLocal = false,

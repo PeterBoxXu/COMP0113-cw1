@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b5c9a629bb6499ea5bbabd8132c5c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  withHands: 1
   animator: {fileID: 6112118468680263666}
   head: {fileID: 6758063930058808772}
   torsoBase: {fileID: 5293104829431841510}
@@ -54,6 +55,16 @@ MonoBehaviour:
   leftHand: {fileID: 1670691965516823129}
   rightHand: {fileID: 2449942412599080710}
   skinnedMeshRenderer: {fileID: 6082539532970951938}
+  LeftArmMeshRenderer: {fileID: 0}
+  RightArmMeshRenderer: {fileID: 0}
+  LeftHand: {fileID: 0}
+  RightHand: {fileID: 0}
+  LeftMissileMatrixArm: {fileID: 0}
+  RightMissileMatrixArm: {fileID: 0}
+  LeftMissileArm: {fileID: 0}
+  RightMissileArm: {fileID: 0}
+  LeftCannonArm: {fileID: 0}
+  RightCannonArm: {fileID: 0}
   headRenderer: {fileID: 6082539532970951938}
   leftHandRenderer: {fileID: 7334439582218619413}
   rightHandRenderer: {fileID: 8872847408095800358}
@@ -147,21 +158,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Materials: {fileID: 11400000, guid: 929d992665e6e4aea95cc7f6a84b7490, type: 2}
-  OnMaterialChanged:
+  OnBodyMaterialChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5383426270922999390}
-        m_TargetAssemblyTypeName: RobotTextureChange, Assembly-CSharp
-        m_MethodName: ApplyMaterialToMeshes
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+  OnLeftArmMaterialChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRightArmMaterialChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLeftArmWeaponChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRightArmWeaponChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6161957635742166610
 GameObject:
   m_ObjectHideFlags: 0
