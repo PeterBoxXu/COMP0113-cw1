@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 4cbecb8c86dba8947ad87bf85f43a63b
+timeCreated: 1427471183
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 33631
+  packageName: Particle Dissolve Shader Package
+  packageVersion: 1.2
+  assetPath: Assets/Particle Dissolve Shader by Moonflower Carnivore/Shaders/unity5/Editor/CustomMaterialEditor.cs
+  uploadId: 184138

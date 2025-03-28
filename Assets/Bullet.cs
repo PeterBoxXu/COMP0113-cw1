@@ -13,9 +13,13 @@ public enum Team : int
 public class Bullet : MonoBehaviour, INetworkSpawnable
 {
     public NetworkId NetworkId { get; set; }
-    public float timeLeft = 5.0f;
+    public float flyingTime = 5.0f;
+    public float explodeTime = 5.0f;
     public bool owner = false;
+    public ParticleSystem particleSystem;
+    public MeshRenderer meshRenderer;
 
+    private bool canExplode = false;
     NetworkContext context;
 
     // Start is called before the first frame update
@@ -33,7 +37,7 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
     {
         if (owner)
         {
-            timeLeft -= Time.deltaTime;
+            flyingTime -= Time.deltaTime;
 
             if (lastPosition != transform.localPosition)
             {
@@ -42,15 +46,32 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
                 {
                     position = transform.localPosition,
                     rotation = transform.localRotation.eulerAngles,
-                    timeLeft = timeLeft,
+                    doExplode = false,
                 });
             }
 
         }
 
-        if (timeLeft <= 0)
+        if (flyingTime <= 0 && !canExplode)
         {
-            NetworkSpawnManager.Find(this).Despawn(gameObject);
+            canExplode = true;
+            context.SendJson(new Message()
+            {
+                position = transform.localPosition,
+                rotation = transform.localRotation.eulerAngles,
+                doExplode = true,
+            });
+
+            Explode();
+        }
+
+        if (canExplode)
+        {
+            explodeTime -= Time.deltaTime;
+            if (explodeTime <= 0)
+            {
+                NetworkSpawnManager.Find(this).Despawn(gameObject);
+            }
         }
     }
 
@@ -59,8 +80,7 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
         public Vector3 position;
         public Vector3 rotation;
         public Team shooterTeam;
-        public float timeLeft;
-        public bool canDestroy;
+        public bool doExplode;
     }
 
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
@@ -74,7 +94,11 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
 
         // Make sure the logic in Update doesn't trigger as a result of this message
         lastPosition = transform.localPosition;
-        timeLeft = m.timeLeft;
+
+        if (m.doExplode)
+        {
+            Explode();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -93,5 +117,11 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
 
             NetworkSpawnManager.Find(this).Despawn(gameObject);
         }
+    }
+
+    private void Explode()
+    {
+        meshRenderer.enabled = false;
+        particleSystem.Play();
     }
 }
