@@ -34,8 +34,8 @@ public class Shoot : MonoBehaviour
     private bool CheckAction()
     {
         // ¼ì²é¼üÅÌ X ¼ü (Check if keyboard X key is pressed)
-        //if (Input.GetKeyDown(KeyCode.X))
-        //    return true;
+        if (Input.GetKeyDown(KeyCode.X))
+            return true;
 
         bool isbuttonPressed = false;
 
