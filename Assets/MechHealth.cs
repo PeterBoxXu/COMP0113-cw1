@@ -9,7 +9,7 @@ public class MechHealth : MonoBehaviour
     NetworkContext context;
     Avatar avatar;
     public int health { get; private set; }
-    public int maxHealth = 20;
+    public int maxHealth = 10;
 
     private void Start()
     {
@@ -53,6 +53,16 @@ public class MechHealth : MonoBehaviour
         
         if (avatar.IsLocal && !healthMessage.fromLocal)
         {
+            if (health < healthMessage.health)
+            {
+                context.SendJson(new HealthMessage()
+                {
+                    fromLocal = true,
+                    health = health
+                });
+                return;
+            }
+
             health = healthMessage.health;
             context.SendJson(new HealthMessage()
             {

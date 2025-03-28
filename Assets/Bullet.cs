@@ -85,6 +85,7 @@ public class Bullet : MonoBehaviour, INetworkSpawnable
         {
             var player = other.GetComponentInParent<MechAvatar>().GetComponentInParent<Avatar>();
             MechHealth health = other.GetComponentInParent<MechHealth>();
+            health.TakeDamage(1);
             Debug.Log($"Bullet hit player {player.name}, {player.IsLocal}");
 
             NetworkSpawnManager.Find(this).Despawn(gameObject);
