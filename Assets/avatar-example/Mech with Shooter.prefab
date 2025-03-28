@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7427944542806531184}
   - component: {fileID: 6632714520882498252}
+  - component: {fileID: 453204184361752800}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -59,6 +60,18 @@ MonoBehaviour:
   headRenderer: {fileID: 0}
   leftHandRenderer: {fileID: 7334439582218619413}
   rightHandRenderer: {fileID: 8872847408095800358}
+--- !u!114 &453204184361752800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 524342218880947358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a17899478f7944ab6184c9e8d3b092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3172939939781028348
 GameObject:
   m_ObjectHideFlags: 0
@@ -828,6 +841,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MediumMechStrikerMasterPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 1762146786600250, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 4531314460354372, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0
@@ -914,7 +931,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 2d306e2f40d5872469a1ebc3e86e2cea, type: 2}
     - target: {fileID: 4384927295999416829, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4384927295999416829, guid: 077155289d2e14247bd0864b560f74ac, type: 3}
       propertyPath: m_IsTrigger
